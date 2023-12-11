@@ -1,0 +1,15 @@
+#+title: Home Assistant Setup Instructions
+
+This will take us through the steps of setting up Home Assistant on Ubuntu Server.
+
+
+# Prerequisites
+
+To use these instructions, you'll need Ubuntu Server installed on a machine, as well as SSH access to the server.
+
+
+# Specifications
+
+I'm running Home Assistant on the following specs:
+  - Raspberry Pi model 4b
+  - Ubuntu Server 64-bit LTS 22.04
