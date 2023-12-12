@@ -26,5 +26,8 @@ I'm running Home Assistant on the following specs:
 
 To start with, we'll be running our Home Assistant application in a Docker container.
 
-**** IDEA Replace Docker with a single-node Kubernetes cluster.
-**** IDEA Install RedHat OpenShift (RHOS) over the top of Kubernetes to better orchestrate the platform.
+*** IDEA Replace Docker with a single-node Kubernetes cluster.
+*** IDEA Install RedHat OpenShift (RHOS) over the top of Kubernetes to better orchestrate the platform.
+*** TODO This is a todo list
+Some stuff is here
+    - More stuff here
