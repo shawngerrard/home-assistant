@@ -17,17 +17,15 @@ I'm running Home Assistant on the following specs:
   - Ubuntu Server 64-bit LTS 22.04
   - 3TB SSD mounted storage volume
 
-**** WAIT Replace Raspberry Pi with more powerful server hardware.
-**** WAIT Change from single node infra to multi-node for high-availability.
-**** WAIT Replace Ubuntu Server with RedHat Enterprise Linux (RHEL).
-
+*** Future updates:
+**** TODO Change from single node infra to multi-node for high-availability.
+**** TODO Replace Raspberry Pi with more powerful server hardware.
+**** TODO Replace Ubuntu Server with RedHat Enterprise Linux (RHEL).
 
 ** Install Docker
 
 To start with, we'll be running our Home Assistant application in a Docker container.
 
-*** IDEA Replace Docker with a single-node Kubernetes cluster.
-*** IDEA Install RedHat OpenShift (RHOS) over the top of Kubernetes to better orchestrate the platform.
-*** TODO This is a todo list
-Some stuff is here
-    - More stuff here
+*** Future updates:
+**** TODO Replace Docker with a single-node Kubernetes cluster.
+**** TODO Install RedHat OpenShift (RHOS) over the top of Kubernetes to better orchestrate the platform.
