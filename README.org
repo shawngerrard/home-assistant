@@ -30,6 +30,10 @@ To install Docker, consult the official Docker [[https://docs.docker.com/engine/
 
 For reference: I've installed Docker using their ~apt~ repository.
 
+#+begin_quote
+This Docker installation requires root privileges to run Docker containers. To run Docker containers as a non-root user, follow the official Docker [[https://docs.docker.com/engine/install/linux-postinstall/][Linux post-installation instructions]].
+#+end_quote
+
 *** Future updates:
 ***** TODO Replace Docker with a single-node Kubernetes cluster.
 ***** TODO Install RedHat OpenShift (RHOS) over the top of Kubernetes to better orchestrate the platform.
