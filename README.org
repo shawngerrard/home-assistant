@@ -18,9 +18,9 @@ I'm running Home Assistant on the following specs:
   - 3TB SSD mounted storage volume
 
 *** Future updates:
-**** TODO Change from single node infra to multi-node for high-availability.
-**** TODO Replace Raspberry Pi with more powerful server hardware.
-**** TODO Replace Ubuntu Server with RedHat Enterprise Linux (RHEL).
+***** TODO Change from single node infra to multi-node for high-availability.
+***** TODO Replace Raspberry Pi with more powerful server hardware.
+***** TODO Replace Ubuntu Server with RedHat Enterprise Linux (RHEL).
 
 ** Install Docker
 
@@ -31,5 +31,5 @@ To install Docker, consult the official Docker [[https://docs.docker.com/engine/
 For reference: I've installed Docker using their ~apt~ repository.
 
 *** Future updates:
-**** TODO Replace Docker with a single-node Kubernetes cluster.
-**** TODO Install RedHat OpenShift (RHOS) over the top of Kubernetes to better orchestrate the platform.
+***** TODO Replace Docker with a single-node Kubernetes cluster.
+***** TODO Install RedHat OpenShift (RHOS) over the top of Kubernetes to better orchestrate the platform.
