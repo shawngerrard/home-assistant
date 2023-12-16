@@ -71,9 +71,13 @@ docker run -d \
   --name homeassistant \
   --privileged \
   --restart=unless-stopped \
-  -e TZ=MY_TIME_ZONE \
-  -v /PATH_TO_YOUR_CONFIG:/config \
+  -e TZ=Pacific/Auckland \
+  -v /mnt/data:/config \
   -v /run/dbus:/run/dbus:ro \
   --network=host \
   ghcr.io/home-assistant/home-assistant:stable
 #+end_src
+
+** Access the Home Assistant dashboard
+
+Once the Docker container is up and running, the Home Assistant dashboard will be accessible using ~http://<host name/host ip network address>:8123/~.
