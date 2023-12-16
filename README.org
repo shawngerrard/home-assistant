@@ -46,7 +46,7 @@ Any OCI (Open Container Initiative) compatible runtime can be used to run a Home
 
 With Docker installed, we can start Home Assistant in an OCI (Open Container Initiatie) container.
 
-#+begin_src sh :shebang "#!/bin/bash" :tangle
+#+begin_src sh :shebang "#!/bin/bash" :notangle
 docker run -d \
   --name homeassistant \
   --privileged \
@@ -65,3 +65,15 @@ docker run -d \
 
 - D-Bus is optional but required if you plan to use the Bluetooth integration.
 #+end_quote
+
+#+begin_src sh :shebang "#1/bin/bash" :tangle
+docker run -d \
+  --name homeassistant \
+  --privileged \
+  --restart=unless-stopped \
+  -e TZ=MY_TIME_ZONE \
+  -v /PATH_TO_YOUR_CONFIG:/config \
+  -v /run/dbus:/run/dbus:ro \
+  --network=host \
+  ghcr.io/home-assistant/home-assistant:stable
+#+end_src
