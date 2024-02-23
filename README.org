@@ -9,6 +9,66 @@ To use these instructions, you'll need Ubuntu Server installed on a machine, as 
 
 You'll also need to use the ~apt~ package manager.
 
+You'll also need to install the following (click on the headers for more info):
+
+*** [[https://www.pulumi.com/docs/install/][Pulumi CLI]]
+
+I use ~pulumi~ to manage the home assistant infrastructure and integration stack.
+
+To install a clean version of ~pulumi~, use the following:
+
+#+begin_src bash
+# Install Pulumi
+curl -fsSL https://get.pulumi.com | sh
+
+# Verify installation by outputting Pulumi version
+pulumi version
+#+end_src
+
+#+begin_quote
+*Note*: The above code block can also be used to update ~pulumi~.
+#+end_quote
+
+*** [[https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating][NVM]]
+
+I use Node Version Manager (~nvm~) to manage the install of ~node~ and ~npm~.
+
+#+begin_src bash
+# Download and run the installation script
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+
+# Verify installation of node by outputting test variable
+command -v nvm
+#+end_src
+
+#+begin_quote
+*Note*: This will install ~nvm~ version 0.39.7. To install a different version, update the version number in the code above. This script will also append some code into ~.bashrc~ so make sure to commit those changes, if necessary.
+#+end_quote
+
+*** [[https://www.npmjs.com/][NPM]] and [[https://nodejs.org/en][Node]]
+
+I use ~npm~ to support the installation of any ~typescript~ modules. I use ~node~ as a compiler for ~typescript~ modules.
+
+To install the latest LTS release of ~node~ and ~npm~, use the following code:
+
+#+begin_src bash
+# Install latest LTS release of npm and node
+nvm install --lts
+#+end_src
+
+# Verify installation by outputting npm and node versions
+npm -v && node -v
+#+end_src
+
+*** [[https://www.typescriptlang.org/][Typescript]]
+
+I use ~typescript~ as the syntax for programming ~pulumi~ and other things.
+
+We can install ~typescript~ globally (across all users) with the following code:
+
+#+begin_src bash
+npm install -g typescript
+#+end_src
 
 ** Specifications
 
@@ -18,9 +78,15 @@ I'm running Home Assistant on the following specs:
   - 3TB SSD mounted storage volume
 
 *** Future updates:
+
+***** TODO Administer infra stack with Pulumi configuration
 ***** TODO Change from single node infra to multi-node for high-availability.
 ***** TODO Replace Raspberry Pi with more powerful server hardware.
 ***** TODO Replace Ubuntu Server with RedHat Enterprise Linux (RHEL).
+
+** Pulumi setup and configuration
+
+Before we can
 
 ** Install Docker
 
@@ -39,6 +105,7 @@ Any OCI (Open Container Initiative) compatible runtime can be used to run a Home
 #+end_quote
 
 *** Future updates:
+
 ***** TODO Replace Docker with a single-node Kubernetes cluster.
 ***** TODO Install RedHat OpenShift (RHOS) over the top of Kubernetes to better orchestrate the platform.
 
