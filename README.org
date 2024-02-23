@@ -86,7 +86,7 @@ I'm running Home Assistant on the following specs:
 
 ** Pulumi setup and configuration
 
-Before we can
+
 
 ** Install Docker
 
