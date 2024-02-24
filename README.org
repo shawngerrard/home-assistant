@@ -148,3 +148,35 @@ docker run -d \
 ** Access the Home Assistant dashboard
 
 Once the Docker container is up and running, the Home Assistant dashboard will be accessible using ~http://<host name/host ip network address>:8123/~.
+
+* Interesting codes
+
+** Find all local IP addresses on the network
+
+To facilitate scanning for IP addresses of devices connected to the local network, we can use ~nmap~. To install ~nmap~:
+
+#+begin_src bash
+# Install nmap using apt
+sudo apt-get install nmap
+#+end_src
+
+To scan for a particular hostname, we can use the ~-A~ option.
+
+#+begin_src bash
+# Find a specific ip address for a hostname
+nmap -A <hostname>
+#+end_src
+
+To find all hosts, we must use the ~-sn~ option followed by the local CIDR to scan.
+
+#+begin_src bash
+# Find ip addresses for all connected devices
+nmap -sn 192.168.1.0/24
+#+end_src
+
+To output only the ip address of the hostname, we can output using ~nmap~ greppable output, and pipe the output to ~awk~ for further formatting.
+
+#+begin_src bash
+# Find ip address for a hostname and output only the ip address
+nmap -n -A <hostname> -oG - | awk '/Up$/{print $2}'
+#+end_src
