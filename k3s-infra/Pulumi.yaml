@@ -1,0 +1,3 @@
+name: k3s-infra
+description: Manage cloud infra on a raspberry-pi
+runtime: nodejs
