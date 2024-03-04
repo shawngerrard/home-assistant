@@ -11,6 +11,19 @@ You'll also need to use the ~apt~ package manager.
 
 You'll also need to install the following (click on the headers for more info):
 
+*** NMAP
+
+#+begin_quote
+*Note*: This is not required if your server has a static IP.
+#+end_quote
+
+I use ~nmap~ to scan my network for IP addresses of connected devices. This is important to provide the server host address to the Pulumi configuration on a network governed by DHCP.
+
+#+begin_src bash
+# Install nmap
+sudo apt-get install nmap
+#+end_src
+
 *** [[https://www.pulumi.com/docs/install/][Pulumi CLI]]
 
 I use ~pulumi~ to manage the home assistant infrastructure and integration stack.
@@ -84,9 +97,9 @@ I'm running Home Assistant on the following specs:
 ***** TODO Replace Raspberry Pi with more powerful server hardware.
 ***** TODO Replace Ubuntu Server with RedHat Enterprise Linux (RHEL).
 
-** Pulumi setup and configuration
+** Pulumi project setup and configuration
 
-
+pulumi new template-name --config="key=value"
 
 ** Install Docker
 
