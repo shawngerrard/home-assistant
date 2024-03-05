@@ -92,7 +92,7 @@ We can install ~typescript~ globally (across all users) with the following code:
 npm install -g typescript
 #+end_src
 
-** Specifications
+** Specification
 
 I'm running Home Assistant on the following specs:
   - Raspberry Pi model 4b
