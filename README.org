@@ -76,7 +76,6 @@ To install the latest LTS release of ~node~ and ~npm~, use the following code:
 #+begin_src bash
 # Install latest LTS release of npm and node
 nvm install --lts
-#+end_src
 
 # Verify installation by outputting npm and node versions
 npm -v && node -v
