@@ -91,6 +91,16 @@ We can install ~typescript~ globally (across all users) with the following code:
 npm install -g typescript
 #+end_src
 
+*** TS-Node
+
+I use ~ts-node~ to compile and run ~typescript~ functions from the command line.
+
+Install ~ts-node~ globally with the following:
+
+#+begin_src bash
+npm install -g ts-node
+#+end_src
+
 ** Specification
 
 I'm running Home Assistant on the following specs:
