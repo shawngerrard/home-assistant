@@ -1,10 +1,16 @@
 import * as pulumi from "@pulumi/pulumi";
 
-// Obtain pulumi configuration
-const config = new pulumi.Config();
+export function pulumiConfig() {
 
-// Obtain secret ssh key from config
-const serverKey = config.requireSecret("serverKey");
+    // Obtain pulumi configuration
+    const config = new pulumi.Config();
 
-// Obtain server IP from config
-const serverIp = config.requireSecret("serverIp");
+    // Obtain secret ssh key from config
+    const serverKey = config.requireSecret("serverKey");
+
+    // Obtain server IP from config
+    const serverIp = config.requireSecret("serverIp");
+
+    // Output
+    console.log(`serverKey is ${serverKey} and serverIp is ${serverIp}`);
+}

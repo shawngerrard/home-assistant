@@ -1,8 +1,17 @@
 {
     "name": "k3s-infra",
+    "version": "0.1.0",
+    "description": "A pulumi project to deploy the infrastructure and applications that deliver home automation",
+    "author": "Shawn Gerrard <shawn.gerrard@gmail.com>",
+    "license": "GPL-3.0-or-later",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/shawngerrard/home-assistant"
+    },
     "main": "index.ts",
     "devDependencies": {
-        "@types/node": "^18"
+        "@types/node": "^18",
+        "vitest": "^1.3.1"
     },
     "dependencies": {
         "@pulumi/pulumi": "^3.0.0"
