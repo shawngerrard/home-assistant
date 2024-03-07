@@ -123,7 +123,7 @@ We must first create and configure the ~typescript~ pulumi project in the CLI. W
 
 #+begin_src bash
 # Create the pulumi project and pass in configuration key/value pairs
-pulumi new typescript --name "home-assistant" --stack "dev" --config="serverKey=$(cat /path/to/ssh/key)" --config="serverIp=$(nmap -n -A <server hostname> -oG - | awk '/Up$/{print $2}')"
+pulumi new typescript --name "home-assistant" --stack "dev" --secret --config="serverKey=$(cat /path/to/private/ssh/key)" --config="serverIp=$(nmap -n -A <server hostname> -oG - | awk '/Up$/{print $2}')"
 #+end_src
 
 #+begin_quote

@@ -1,6 +1,6 @@
 import * as pulumi from "@pulumi/pulumi";
 
-export function pulumiConfig() {
+export function pulumiConfig(): string {
 
     // Obtain pulumi configuration
     const config = new pulumi.Config();
@@ -9,8 +9,13 @@ export function pulumiConfig() {
     const serverKey = config.requireSecret("serverKey");
 
     // Obtain server IP from config
-    const serverIp = config.requireSecret("serverIp");
+    const serverIp = config.require("serverIp");
 
     // Output
-    console.log(`serverKey is ${serverKey} and serverIp is ${serverIp}`);
+    //console.log(`serverKey is ${serverKey} and serverIp is ${serverIp}`);
+
+    //return `serverKey is ${serverKey} and serverIp is ${serverIp}
+    return `serverIp is ${serverIp}`
 }
+
+pulumiConfig();
