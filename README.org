@@ -7,103 +7,19 @@ This will take us through the steps of setting up Home Assistant on Ubuntu Serve
 
 To use these instructions, you'll need Ubuntu Server installed on a machine, as well as SSH access (OpenSSH) to the server.
 
-You'll also need to use the ~apt~ package manager.
-
-You'll also need to install the following (click on the headers for more info):
-
-*** [[https://www.gnu.org/software/gawk/][GAWK]]
-
-I use ~gawk~ for format manipulation of textual standard output, which is useful for formatting output from ~nmap~ (see below) to obtain our server IP address.
-
-#+begin_src bash
-# Install gawk via apt
-sudo apt-get install gawk -y
-#+end_src
-
-*** [[https://nmap.org/][NMAP]]
+You'll need to install the following tools to use this repository:
 
 #+begin_quote
-*Note*: This is not required if your server has a static IP.
+*Note*: If using my [[https://github.com/shawngerrard/ubuntu-tooling/][ubuntu-tool setup]], these tools should already be installed/configured.
 #+end_quote
 
-I use ~nmap~ to scan my network for IP addresses of connected devices. This is important to provide the server host address to the Pulumi configuration on a network governed by DHCP.
-
-#+begin_src bash
-# Install nmap via apt
-sudo apt-get install nmap
-#+end_src
-
-*** [[https://www.pulumi.com/docs/install/][Pulumi CLI]]
-
-I use ~pulumi~ to manage the home assistant infrastructure and integration stack.
-
-To install a clean version of ~pulumi~, use the following:
-
-#+begin_src bash
-# Download and install the Pulumi CLI package
-curl -fsSL https://get.pulumi.com | sh
-
-# Verify installation by outputting Pulumi version
-pulumi version
-#+end_src
-
-#+begin_quote
-*Note*: The above code block can also be used to update ~pulumi~.
-#+end_quote
-
-*** [[https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating][NVM]]
-
-I use Node Version Manager (~nvm~) to manage the install of ~node~ and ~npm~.
-
-#+begin_src bash
-# Download and run the installation script
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-
-# Verify installation of node by outputting test variable
-command -v nvm
-#+end_src
-
-#+begin_quote
-*Note*: This will install ~nvm~ version 0.39.7. To install a different version, update the version number in the code above. This script will also append some code into ~.bashrc~ so make sure to commit those changes, if necessary.
-#+end_quote
-
-*** [[https://www.npmjs.com/][NPM]] and [[https://nodejs.org/en][Node]]
-
-I use ~npm~ to support the installation of any ~typescript~ modules. I use ~node~ as a compiler for ~typescript~ modules.
-
-To install the latest LTS release of ~node~ and ~npm~, use the following code:
-
-#+begin_src bash
-# Install latest LTS release of npm and node
-nvm install --lts
-
-# Verify installation by outputting npm and node versions
-npm -v && node -v
-#+end_src
-
-#+begin_quote
-*Note*: If you have two versions of ~node~ installed, use ~nvm alias default node~ to set the default version to the "latest" version of ~node~. Similarly, to peg the version to a particular number use ~nvm alias default <version number>~.
-#+end_quote
-
-*** [[https://www.typescriptlang.org/][Typescript]]
-
-I use ~typescript~ as the syntax for programming ~pulumi~ and other things.
-
-We can install ~typescript~ globally (across all users) with the following code:
-
-#+begin_src bash
-npm install -g typescript
-#+end_src
-
-*** TS-Node
-
-I use ~ts-node~ to compile and run ~typescript~ functions from the command line.
-
-Install ~ts-node~ globally with the following:
-
-#+begin_src bash
-npm install -g ts-node
-#+end_src
+- [[https://www.gnu.org/software/gawk/][GAWK]]
+- [[https://nmap.org/][NMAP]]
+- [[https://www.pulumi.com/docs/install/][Pulumi CLI]]
+- [[https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating][NVM]]
+- [[https://www.npmjs.com/][NPM]] and [[https://nodejs.org/en][Node]]
+- [[https://www.typescriptlang.org/][Typescript]]
+- [[https://www.npmjs.com/package/ts-node][TS-Node]]
 
 ** Specification
 
