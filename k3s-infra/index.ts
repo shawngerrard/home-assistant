@@ -12,7 +12,7 @@ export function pulumiConfig(): string {
     const serverIp = config.require("serverIp");
 
     // Output
-    //console.log(`serverKey is ${serverKey} and serverIp is ${serverIp}`);
+    console.log(`serverKey is ${serverKey} and serverIp is ${serverIp}`);
 
     //return `serverKey is ${serverKey} and serverIp is ${serverIp}
     return `serverIp is ${serverIp}`
