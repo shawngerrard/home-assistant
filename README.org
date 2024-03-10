@@ -81,6 +81,10 @@ nvm install --lts
 npm -v && node -v
 #+end_src
 
+#+begin_quote
+*Note*: If you have two versions of ~node~ installed, use ~nvm alias default node~ to set the default version to the "latest" version of ~node~. Similarly, to peg the version to a particular number use ~nvm alias default <version number>~.
+#+end_quote
+
 *** [[https://www.typescriptlang.org/][Typescript]]
 
 I use ~typescript~ as the syntax for programming ~pulumi~ and other things.

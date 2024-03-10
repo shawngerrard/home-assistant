@@ -3,7 +3,7 @@ import * as pulumi from "@pulumi/pulumi";
 export function pulumiConfig(): string {
 
     // Obtain pulumi configuration
-    const config = new pulumi.Config();
+    const config = new pulumi.Config("k3s-infra");
 
     // Obtain secret ssh key from config
     const serverKey = config.requireSecret("serverKey");
@@ -18,4 +18,4 @@ export function pulumiConfig(): string {
     return `serverIp is ${serverIp}`
 }
 
-pulumiConfig();
+export const serverIp = pulumiConfig();
