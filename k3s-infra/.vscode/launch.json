@@ -5,12 +5,13 @@
       "name": "TS Pulumi k3s-infra index.ts",
       "type": "node",
       "request": "launch",
+      "args": ["${workspaceFolder}/index.ts"],
       "runtimeArgs": ["--nolazy","-r","ts-node/register"],
-      "program": "${workspaceFolder}/index.ts",
-      "preLaunchTask": "npm: build",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "buildjs",
       "dap-compilation": "npm run build",
       "outFiles": ["${workspaceFolder}/dist/*.js"],
       "protocol": "inspector"
-    }
+     }
   ]
 }
