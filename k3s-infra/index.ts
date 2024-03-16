@@ -1,14 +1,36 @@
 import * as pulumi from "@pulumi/pulumi";
+import { remote } from "@pulumi/command";
+import { iConnectionObj } from "./bin/interfaces";
 
 // Obtain pulumi configuration
 const config = new pulumi.Config("k3s-infra");
 
-// Export secret ssh key from config to output
-export const serverKey = config.requireSecret("serverKey");
+// TODO 1a: Set wan server port and lan server port in pulumi config
+// TODO 1b: Test for network gateway host/ip to determine port to use
+// TODO 1c: Use port variable in connectionObj below
+// TODO 2a: Abstract connectionObj into its own module
 
-// Export server IP from config to output
-export const serverIp = config.require("serverIp");
+// Create connection object using the type interface
+const connectionObj = {
+  host: config.require("serverIp"),
+  port: 22,
+  user: config.require("serverUser"),
+  privateKey: config.requireSecret("serverKey")
+} as iConnectionObj;
 
 // Log config
-//console.log(`serverKey is ${serverKey} and serverIp is ${serverIp}`);
 console.log(config);
+
+// Send a create file command to the server
+const createFile = new remote.Command("Create file",{
+  create: "touch ~/thisisatest.org",
+  connection: connectionObj,
+  delete: "rm -rf ~/thisisatest.org"
+}, {});
+
+// Install K3S on the server
+const installK3S = new remote.Command("Install K3S", {
+  create: "curl -sfL https://get.k3s.io | sh -",
+  connection: connectionObj,
+  delete: "/usr/local/bin/k3s-uninstall.sh"
+}, {});

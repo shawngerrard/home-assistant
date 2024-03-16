@@ -47,7 +47,8 @@ pulumi new typescript --name "home-assistant" \
     --stack "dev" \
     --secret \
     --config="serverKey=$(cat /path/to/private/ssh/key)" \
-    --config="serverIp=$(nmap -n -A <server hostname> -oG - | awk '/Up$/{print $2}')"
+    --config="serverIp=$(nmap -n -A <server hostname> -oG - | awk '/Up$/{print $2}')" \
+    --config="serverUser=<server username>"
 #+end_src
 
 #+begin_quote
