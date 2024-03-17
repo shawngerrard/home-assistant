@@ -21,13 +21,6 @@ const connectionObj = {
 // Log config
 console.log(config);
 
-// Send a create file command to the server
-const createFile = new remote.Command("Create file",{
-  create: "touch ~/thisisatest.org",
-  connection: connectionObj,
-  delete: "rm -rf ~/thisisatest.org"
-}, {});
-
 // Install K3S on the server
 const installK3S = new remote.Command("Install K3S", {
   create: "curl -sfL https://get.k3s.io | sh -",
