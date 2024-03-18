@@ -5,7 +5,7 @@ import { iConnectionObj } from "../bin/interfaces";
 export async function installK3s (connectionObj: iConnectionObj): Promise<remote.Command> {
   // Remote command to install K3S/Helm on the server
   const installKube = new remote.Command("Install K3S/Helm", {
-    create: "curl -sfL https://get.k3s.io | sh -",
+    create: "curl -sfL https://get.k3s.io | sh -s - --disable=traefik",
     connection: connectionObj,
     delete: "/usr/local/bin/k3s-uninstall.sh"
   }, {});
