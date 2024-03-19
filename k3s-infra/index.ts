@@ -1,6 +1,8 @@
 import * as pulumi from "@pulumi/pulumi";
-import { iConnectionObj } from "./bin/interfaces";
-import { installK3s, configKubectl } from "./bin/k3sFunctions";
+import { iConnectionObj } from "./bin/interfaces/connection";
+import { installK3s,
+         copyKubeConfig,
+         setKubeConfigEnv } from "./bin/functions/k3sInstallConfig";
 
 async function main() {
   // Obtain pulumi configuration
@@ -21,7 +23,10 @@ async function main() {
   // Run pulumi commands to install k3s and helm on server
   const installKube = await installK3s(connectionObj);
   // Run pulumi commands to configure cluster access on server
-  const kubeConfig = await configKubectl(connectionObj, installKube);
+  const kubeConfig = await copyKubeConfig(connectionObj, installKube);
+  // Run pulumi commands to create kubeconfig environment variable
+  const kubeEnvVar = await setKubeConfigEnv(connectionObj, kubeConfig);
+
 }
 
 // Call main async function
