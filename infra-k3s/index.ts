@@ -1,17 +1,13 @@
 import * as pulumi from "@pulumi/pulumi";
-import { iConnectionObj } from "./bin/interfaces/connection";
+import { iConnectionObj } from "../bin/interfaces/connection";
 import { installK3s,
          copyKubeConfig,
-         setKubeConfigEnv } from "./bin/functions/k3sInstallConfig";
-import { installHelm } from "./bin/functions/helmInstallConfig";
+         setKubeConfigEnv } from "./functions/k3sInstall";
+import { installHelm } from "./functions/helmInstall";
 
 async function main() {
   // Obtain pulumi configuration
-  const config = new pulumi.Config("k3s-infra");
-  // TODO 1a: Set wan server port and lan server port in pulumi config
-  // TODO 1b: Test for network gateway host/ip to determine port to use
-  // TODO 1c: Use port variable in connectionObj below
-  // TODO 2a: Abstract connectionObj into its own module
+  const config = new pulumi.Config("infra-k3s");
   // Create connection object using the type interface
   const connectionObj = {
     host: config.require("serverIp"),
@@ -29,7 +25,14 @@ async function main() {
   const kubeEnvVar = await setKubeConfigEnv(connectionObj, kubeConfig);
   // Install helm on server
   const installHelmCli = await installHelm(connectionObj, kubeEnvVar);
+
+  // Return connection configuration
+  return {
+    serverIp: connectionObj.host,
+    serverPort: connectionObj.port,
+    serverUser: connectionObj.user
+  };
 }
 
 // Call main async function
-main();
+export const connectionConfig = main();

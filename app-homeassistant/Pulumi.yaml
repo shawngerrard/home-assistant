@@ -1,0 +1,3 @@
+name: app-homeassistant
+description: Stack to deploy the home-assistant microservice
+runtime: nodejs

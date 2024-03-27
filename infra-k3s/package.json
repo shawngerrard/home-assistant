@@ -1,7 +1,7 @@
 {
     "name": "k3s-infra",
     "version": "0.1.0",
-    "description": "A pulumi project to deploy the infrastructure and applications that deliver home automation",
+    "description": "A pulumi project to deploy the infrastructure needed to deliver home automation",
     "author": "Shawn Gerrard <shawn.gerrard@gmail.com>",
     "license": "GPL-3.0-or-later",
     "repository": {
