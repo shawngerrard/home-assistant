@@ -35,34 +35,96 @@ I'm running Home Assistant on the following specs:
 ***** TODO Replace Raspberry Pi with more powerful server hardware.
 ***** TODO Replace Ubuntu Server with RedHat Enterprise Linux (RHEL).
 
-** Pulumi infrastructure
+** Infrastructure deployment
 
-**** Scaffold and configuration
+*** Scaffold and configuration
 
-We must first create and configure the ~typescript~ pulumi project in the CLI. We can do this by passing in the ~--config~ parameter to the ~pulumi new~ command.
+We must first create and configure the ~typescript~ pulumi project that will be used to install our infrastructure applications (E.G - ~k3s~, ~helm~, etc).
+
+**** New project
+
+We can create and configure our stack by passing in the ~--config~ parameter to the ~pulumi new~ command, as follows:
+
+#+begin_quote
+*Note*: Makes sure you run the following command in the correct (sub-)folder.
+#+end_quote
 
 #+begin_src bash
 # Create the pulumi project and pass in configuration key/value pairs
-pulumi new typescript --name "home-assistant" \
+pulumi new typescript --name "infra-k3s" \
     --stack "dev" \
     --secret \
     --config="serverKey=$(cat /path/to/private/ssh/key)" \
     --config="serverIp=$(nmap -n -A <server hostname> -oG - | awk '/Up$/{print $2}')" \
     --config="serverUser=<server username>"
-#+end_src
+#+end_srcg
 
 #+begin_quote
 *Note*: This will create a new typescript pulumi project named ~home-assistant~, a stack named ~dev~, and a configuration file (~Pulumi.dev.yaml~) containing the server SSH key for remote connection as well as the IP address (obtained from ~nmap~) of the server.
 #+end_quote
 
-**** Deployment
+**** Existing project
 
-With the infrastructure and applications to deploy defined within the project (typically ~index.ts~), we can deploy our ~home-assistant~ suite.
+First, we must clone our project from the repository:
+
+#+begin_src bash
+git clone git@github.com:shawngerrard/home-assistant.git ~/documents/
+#+end_src
+
+Then, we must initialise the stack:
+
+#+begin_src bash
+cd ~/documents/home-assistant/infra-k3s && pulumi stack init myhome/dev
+#+end_src
+
+Finally, we need to populate our pulumi configuration file:
+
+#+begin_src bash
+cat ~/path/to/ssh/private/key | pulumi config set --secret serverKey
+nmap -n -A <server hostname> -oG - | awk '/Up$/{print $2}' | pulumi config set serverIp
+pulumi config set serverUser <user name>
+#+end_src
+
+*** Deployment
+
+With the infrastructure to deploy defined within the project (typically ~index.ts~), we can deploy our ~infra-k3s~ suite.
 
 #+begin_src bash
 # Deploy the pulumi dev stack
 pulumi up -y
 #+end_src
+
+** Home Assistant deployment
+
+*** Scaffold and configuration
+
+Once the ~infra-k3s~ stack is up, we're ready to deploy our ~app-homeassistant~ application.
+
+**** Existing project
+
+First, we must initialise the stack:
+
+#+begin_src bash
+cd ~/documents/home-assistant/app-homeassistant && pulumi stack init myhome/dev
+#+end_src
+
+Next, set the configuration we need for this stack.
+
+#+begin_src bash
+cat ~/path/to/ssh/private/key | pulumi config set --secret serverKey
+pulumi config set org myhome
+pulumi config set serverStack infra-k3s
+#+end_src
+
+*** Deployment
+
+With the applications to deploy defined within the project (typically ~index.ts~), we can deploy our ~app-homeassistant~ suite.
+
+#+begin_src bash
+# Deploy the pulumi dev stack
+pulumi up -y
+#+end_src
+
 
 ** Install Docker
 
