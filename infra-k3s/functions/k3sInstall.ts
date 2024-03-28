@@ -16,7 +16,7 @@ export async function installK3s (connectionObj: iConnectionObj): Promise<remote
 export async function copyKubeConfig (connectionObj: iConnectionObj, dependency?: remote.Command): Promise<remote.Command> {
   // Remote command to configure kubeconfig on the server
   const kubeConfigFile = new remote.Command("Copy kube configuration", {
-    create: "mkdir ~/.kube && sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config && sudo chown $(id -u):$(id -g) ~/.kube/config",
+    create: "mkdir ~/.kube && mkdir ~/.kube/bin && sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config && sudo chown $(id -u):$(id -g) ~/.kube/config",
     connection: connectionObj,
     delete: "rm -rf ~/.kube"
   }, {
@@ -36,4 +36,30 @@ export async function setKubeConfigEnv (connectionObj: iConnectionObj, dependenc
     dependsOn: dependency
   });
   return kubeConfigEnv;
+}
+
+// Async function to copy initial k3s namespace configuration files to remote server
+export async function copyNamespaceConfig(connectionObj: iConnectionObj, dependency?: remote.Command): Promise<remote.CopyFile> {
+  // Copy local file to the remote server
+  const copyConfigFiles = new remote.CopyFile("Copy cluster configuration files to server", {
+    localPath: "./kube/namespaces.yaml",
+    remotePath: "./.kube/bin/namespaces.yaml",
+    connection: connectionObj
+  }, {
+    dependsOn: dependency
+  });
+  return copyConfigFiles;
+}
+
+// Async function to create cluster namespaces
+export async function createNamespaces(connectionObj: iConnectionObj, dependency?: remote.CopyFile): Promise<remote.Command> {
+  // Remote command to create namespaces in k3s
+  const createNamespaces = new remote.Command("Create k3s namespaces", {
+    create: "kubectl apply -f ~/.kube/bin/namespaces.yaml",
+    connection: connectionObj,
+    delete: "rm -rf ~/.kube/bin/namespaces.yaml"
+  }, {
+    dependsOn: dependency
+  })
+  return createNamespaces;
 }
