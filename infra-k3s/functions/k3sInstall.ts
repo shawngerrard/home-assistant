@@ -1,5 +1,5 @@
 import { remote } from "@pulumi/command";
-import { iConnectionObj } from "../interfaces/connection";
+import { iConnectionObj } from "../../bin/interfaces/connection";
 
 // Async function to install k3s
 export async function installK3s (connectionObj: iConnectionObj): Promise<remote.Command> {

@@ -10,6 +10,17 @@ import { getServerConnectionConfig } from "../bin/functions/connection";
 async function main() {
   // Obtain the server connection object
   const connectionObj = await getServerConnectionConfig();
+  // Create kubernetes provider resource
+  const provider = new k8s.Provider("kubernetes provider", {
+
+  },{})
+  // Deploy the home-assistant remote chart
+  const appChart = new k8s.helm.v3.Chart("home-assistant-chart", {
+    chart: "home-assistant",
+    fetchOpts: {
+      repo: "http://pajikos.github.io/home-assistant-helm-chart/"
+    }
+  });
   // Return the connection object for output (testing)
   return connectionObj;
 }

@@ -1,5 +1,5 @@
 import { remote } from "@pulumi/command";
-import { iConnectionObj } from "../interfaces/connection";
+import { iConnectionObj } from "../../bin/interfaces/connection";
 
 // Async function to install helm
 export async function installHelm(connectionObj: iConnectionObj, dependency?: remote.Command): Promise<remote.Command> {
