@@ -19,6 +19,12 @@ async function main() {
     chart: "home-assistant",
     fetchOpts: {
       repo: "http://pajikos.github.io/home-assistant-helm-chart/"
+    },
+    values: {
+      service: {
+        type: "NodePort",
+        port: 30001
+      }
     }
   });
   // Return the connection object for output (testing)
