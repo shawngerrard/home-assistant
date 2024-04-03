@@ -15,6 +15,8 @@ async function main() {
   // Obtain the server connection object
   const connectionObj = await getServerConnectionConfig();
   // Specify custom template settings for service in Helm values file
+  // TODO: Update home-assistant helm chart values file to accept the following properties
+  // TODO: Update NodePort to use either a LoadBalancer service or a ClusterIP service using an ingress resource
   const customServiceValues = {
     service: {
       type: "NodePort",
