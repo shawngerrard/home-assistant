@@ -25,10 +25,10 @@ export async function copyKubeConfig (connectionObj: iConnectionObj, dependency?
   return kubeConfigFile;
 }
 
-// Async function to set kubeconfig environment variables for cluster access
-export async function setKubeConfigEnv (connectionObj: iConnectionObj, dependency?: remote.Command): Promise<remote.Command> {
+// Async function to set kubeconfig filepath in environment variables for cluster access
+export async function setKubeConfigFilepath (connectionObj: iConnectionObj, dependency?: remote.Command): Promise<remote.Command> {
   // Remote command to globally set a permanent environment variable on the server
-  const kubeConfigEnv = new remote.Command("Set kubeconfig environment variable", {
+  const kubeConfigEnv = new remote.Command("Set path in kubeconfig environment variable", {
     create: "echo KUBECONFIG=~/.kube/config | sudo tee -a /etc/environment && . /etc/environment",
     connection: connectionObj,
     delete: "sudo sed -i '/^KUBECONFIG/d' /etc/environment && unset KUBECONFIG"

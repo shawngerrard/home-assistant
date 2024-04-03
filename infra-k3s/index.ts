@@ -2,7 +2,7 @@ import { getServerConnectionConfig } from "../bin/functions/connection";
 import { copyNamespaceConfig,
          copyKubeConfig,
          installK3s,
-         setKubeConfigEnv,
+         setKubeConfigFilepath,
          createNamespaces} from "./functions/k3sInstall";
 import { installHelm } from "./functions/helmInstall";
 
@@ -16,7 +16,7 @@ async function main() {
   // Configure cluster access on server
   const kubeConfig = await copyKubeConfig(connectionObj, installKube);
   // Create kubeconfig environment variable
-  const kubeEnvVar = await setKubeConfigEnv(connectionObj, kubeConfig);
+  const kubeEnvVar = await setKubeConfigFilepath(connectionObj, kubeConfig);
   // Install helm on server
   const installHelmCli = await installHelm(connectionObj, kubeEnvVar);
   // Copy k3s namespace configuration files
