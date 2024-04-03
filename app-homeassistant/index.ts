@@ -11,6 +11,7 @@ import { getServerConnectionConfig } from "../bin/functions/connection";
 async function main() {
   // Set the path for the local chart
   const chartPath = "./../../helm-charts/charts/home-assistant";
+  // TODO: Create a function to create k3s namespaces rather than using kube/namespace.yaml
   // Obtain the server connection object
   const connectionObj = await getServerConnectionConfig();
   // Specify custom template settings for service in Helm values file
@@ -25,8 +26,10 @@ async function main() {
     }
   };
   // Deploy the home-assistant remote chart
+  // TODO: Update helm charts repo as environment-specific multi-repo
   const appChart = new k8s.helm.v3.Chart(`Deploy ${pulumi.getStack()} home-assistant helm chart`,{
     path: chartPath,
+    // TODO: Update infra and deployment repo into environment-specific multi-repo
     namespace: `app-homeassistant-${pulumi.getStack()}`,
     values: customServiceValues
   });
