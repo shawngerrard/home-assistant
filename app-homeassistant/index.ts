@@ -25,7 +25,7 @@ async function main() {
     }
   };
   // Deploy the home-assistant remote chart
-  const appChart = new k8s.helm.v3.Chart("Deploy home-assistant helm chart",{
+  const appChart = new k8s.helm.v3.Chart(`Deploy ${pulumi.getStack()} home-assistant helm chart`,{
     path: chartPath,
     namespace: `app-homeassistant-${pulumi.getStack()}`,
     values: customServiceValues
