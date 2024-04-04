@@ -17,6 +17,7 @@ async function main() {
   const createNamespace = new k8s.core.v1.Namespace(`Create ${chartNamespace} namespace`, {
     metadata: {
       name: chartNamespace
+    }
   });
   // Obtain the server connection object
   const connectionObj = await getServerConnectionConfig();
@@ -26,16 +27,13 @@ async function main() {
   const customServiceValues = {
     service: {
       type: "NodePort",
-      ports: [{
-        port: 8080,
-        targetPort: 8080,
-        nodePort: 30001
-      }]
+      port: 8080,
+      nodePort: 30001
     }
   };
   // Deploy the home-assistant remote chart
   // TODO: Update helm charts repo as environment-specific multi-repo
-  const appChart = new k8s.helm.v3.Chart(`Deploy ${pulumi.getStack()} home-assistant helm chart`,{
+  const appChart = new k8s.helm.v3.Chart("home-assistant",{
     path: chartPath,
     // TODO: Update infra and deployment repo into environment-specific multi-repo
     namespace: chartNamespace,
