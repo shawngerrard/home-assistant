@@ -11,7 +11,13 @@ import { getServerConnectionConfig } from "../bin/functions/connection";
 async function main() {
   // Set the path for the local chart
   const chartPath = "./../../helm-charts/charts/home-assistant";
-  // TODO: Create a function to create k3s namespaces rather than using kube/namespace.yaml
+  // Set the namespace name to create/use for the chart
+  const chartNamespace = `app-homeassistant-${pulumi.getStack()}`;
+  // Create a k3s namespace for the app
+  const createNamespace = new k8s.core.v1.Namespace(`Create ${chartNamespace} namespace`, {
+    metadata: {
+      name: chartNamespace
+  });
   // Obtain the server connection object
   const connectionObj = await getServerConnectionConfig();
   // Specify custom template settings for service in Helm values file
@@ -32,8 +38,10 @@ async function main() {
   const appChart = new k8s.helm.v3.Chart(`Deploy ${pulumi.getStack()} home-assistant helm chart`,{
     path: chartPath,
     // TODO: Update infra and deployment repo into environment-specific multi-repo
-    namespace: `app-homeassistant-${pulumi.getStack()}`,
+    namespace: chartNamespace,
     values: customServiceValues
+  },{
+    dependsOn: createNamespace
   });
   // Return the connection object for output (testing)
   return connectionObj;

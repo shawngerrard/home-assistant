@@ -38,7 +38,7 @@ export async function setKubeConfigFilepath (connectionObj: iConnectionObj, depe
   return kubeConfigEnv;
 }
 
-// Async function to copy initial k3s namespace configuration files to remote server
+// (Deprecated) Async function to copy initial k3s namespace configuration files to remote server
 export async function copyNamespaceConfig(connectionObj: iConnectionObj, dependency?: remote.Command): Promise<remote.CopyFile> {
   // Copy local file to the remote server
   const copyConfigFiles = new remote.CopyFile("Copy cluster configuration files to server", {
@@ -51,7 +51,7 @@ export async function copyNamespaceConfig(connectionObj: iConnectionObj, depende
   return copyConfigFiles;
 }
 
-// Async function to create cluster namespaces
+// (Deprecated) Async function to create cluster namespaces
 export async function createNamespaces(connectionObj: iConnectionObj, dependency?: remote.CopyFile): Promise<remote.Command> {
   // Remote command to create namespaces in k3s
   const createNamespaces = new remote.Command("Create k3s namespaces", {
