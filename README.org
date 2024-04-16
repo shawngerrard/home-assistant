@@ -234,18 +234,19 @@ pulumi up -y
 
 ** Integrations (Google Cloud) deployment
 
-This guide will outline how to deploy the integrations to ~home-assistant~ from ~gcp~.
+This guide will outline how to deploy the integrations to ~home-assistant~ within a ~gcp~ project.
 
-*** Pre-requisites
+*** Enable services
 
-This guide assumes the following:
+First, we must enable the required integration services within ~gcp~:
 
-1. You have an account up to use the [[https://console.cloud.google.com/][Google Cloud Platform]].
-2. You have a project created in ~gcp~ for Pulumi to interact with.
+#+begin_src bash
+# Enable the smart device management api in the gcp api library
+gcloud services enable smartdevicemanagement.googleapis.com
 
-*** Scaffold and configuration
-
-
+# Enable the cloud pub/sub api in the gcp api library
+gcloud services enable pubsub.googleapis.com
+#+end_src
 
 ** Install Docker
 
