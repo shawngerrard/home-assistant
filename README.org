@@ -35,6 +35,47 @@ I'm running Home Assistant on the following specs:
 ***** TODO Replace Raspberry Pi with more powerful server hardware.
 ***** TODO Replace Ubuntu Server with RedHat Enterprise Linux (RHEL).
 
+** Pulumi authentication
+
+If you haven't already, we must authenticate with Pulumi in order to interact with the Pulumi Cloud API. We can do this a number of different ways - either log in via CLI or use an access token.
+
+#+begin_quote
+**Note**: Please refer to the definitions of both organizational and personal access tokens on the [[https://www.pulumi.com/docs/pulumi-cloud/access-management/access-tokens/][Pulumi website]]. This link will also provide the information on how to generate an access token. For the purposes of this guide, we will be creating a _personal access token_.
+#+end_quote
+
+
+#+begin_quote
+**Note**: Neither of the options listed below are secure on their own - please refer to Pulumi regarding [[https://www.pulumi.com/blog/using-pulumi-securely/][how to use it securely]].
+#+end_quote
+
+*** Update credentials.json with access token
+
+We can update the ~​~/.pulumi/credentials.json~ with the appropriate access token:
+
+#+begin_quote
+{
+    "current": "https://api.pulumi.com",
+    "accessTokens": {
+        "https://api.pulumi.com": "<access token>"
+    },
+    "accounts": {
+        "https://api.pulumi.com": {
+            "accessToken": "<access token>",
+            "username": "<username>",
+            "organizations": [
+                "<org1>",
+                "<org2>"
+            ],
+            "lastValidatedAt": "2024-04-16T11:35:59.084951264+12:00"
+        }
+    }
+}
+#+end_quote
+
+*** Update an environment variable
+
+We could also use the ~PULUMI_ACCESS_TOKEN~ environment variable to store our access token.
+
 ** Infrastructure deployment
 
 *** Scaffold and configuration
@@ -97,10 +138,10 @@ First, we must clone our project from the repository:
 git clone git@github.com:shawngerrard/home-assistant.git ~/documents/
 #+end_src
 
-Then, we must initialise the ~dev~ stack of our infrastructure project ~infra-k3s~:
+Then, we must select the ~dev~ stack of our infrastructure project ~infra-k3s~:
 
 #+begin_src bash
-cd ~/documents/home-assistant/infra-k3s && pulumi stack init myhome/dev
+cd ~/documents/home-assistant/infra-k3s && pulumi stack select myhome/dev
 #+end_src
 
 And also populate the pulumi configuration file for ~infra-k3s~:
@@ -111,10 +152,10 @@ nmap -n -A <server hostname> -oG - | awk '/Up$/{print $2}' | pulumi config set s
 pulumi config set serverUser <user name>
 #+end_src
 
-Next, we must initialise the ~dev~ stack of our application deployment project ~app-homeassistant~:
+Next, we must select the ~dev~ stack of our application deployment project ~app-homeassistant~:
 
 #+begin_src bash
-cd ~/documents/home-assistant/app-homeassistant && pulumi stack init myhome/dev
+cd ~/documents/home-assistant/app-homeassistant && pulumi stack select myhome/dev
 #+end_src
 
 Then, populate the pulumi configuration file for ~app-homeassistant~:
@@ -123,6 +164,13 @@ Then, populate the pulumi configuration file for ~app-homeassistant~:
 cat ~/path/to/ssh/private/key | pulumi config set --secret serverKey
 pulumi config set org myhome
 pulumi config set serverProject infra-k3s
+#+end_src
+
+Finally, for the projects to compile we must download the code package dependencies from ~npm~ referenced in each project's ~package.json~:
+
+#+begin_src bash
+cd ~/documents/home-assistant/infra-k3s && npm install
+cd ~/documents/home-assistant/app-homeassistant && npm install
 #+end_src
 
 *** Deployment
