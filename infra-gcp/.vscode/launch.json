@@ -2,7 +2,7 @@
   "version": "0.1.0",
   "configurations": [
     {
-      "name": "TS Pulumi infra-k3s index.ts",
+      "name": "TS Pulumi infra-gcp index.ts",
       "type": "node",
       "request": "launch",
       "args": ["${workspaceFolder}/index.ts"],

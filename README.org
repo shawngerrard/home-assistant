@@ -16,6 +16,7 @@ You'll need to install the following tools to use this repository:
 - [[https://www.gnu.org/software/gawk/][GAWK]]
 - [[https://nmap.org/][NMAP]]
 - [[https://www.pulumi.com/docs/install/][Pulumi CLI]]
+- [[https://cloud.google.com/sdk/docs/install][GCP CLI]]
 - [[https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating][NVM]]
 - [[https://www.npmjs.com/][NPM]] and [[https://nodejs.org/en][Node]]
 - [[https://www.typescriptlang.org/][Typescript]]
@@ -42,7 +43,6 @@ If you haven't already, we must authenticate with Pulumi in order to interact wi
 #+begin_quote
 **Note**: Please refer to the definitions of both organizational and personal access tokens on the [[https://www.pulumi.com/docs/pulumi-cloud/access-management/access-tokens/][Pulumi website]]. This link will also provide the information on how to generate an access token. For the purposes of this guide, we will be creating a _personal access token_.
 #+end_quote
-
 
 #+begin_quote
 **Note**: Neither of the options listed below are secure on their own - please refer to Pulumi regarding [[https://www.pulumi.com/blog/using-pulumi-securely/][how to use it securely]].
@@ -76,13 +76,29 @@ We can update the ~​~/.pulumi/credentials.json~ with the appropriate access to
 
 We could also use the ~PULUMI_ACCESS_TOKEN~ environment variable to store our access token.
 
+** Google Cloud authentication
+
+If you haven't already, we must authenticate with Google in order to interact with the Google Cloud API by setting a project and using a link supplied by Google to optain an access code.
+
+#+begin_src bash
+# Set project ID in config
+gcloud config set project <YOUR_GCP_PROJECT_ID>
+
+# Obtain a url from Google to log in
+gcloud auth login --no-launch-browser
+#+end_src
+
+Use the code from the URL provided to obtain an access code and enter the code into the CLI.
+
 ** Infrastructure deployment
+
+This guide will deploy ~k3s~ infrastructure to a ~raspberry-pi~ using Pulumi.
 
 *** Scaffold and configuration
 
 We must first create and configure the ~typescript~ pulumi project that will be used to install our infrastructure applications (E.G - ~k3s~, ~helm~, etc).
 
-**** New infrastructure project
+**** New project
 
 First, we need to create a stack to manage our infrastructure.
 
@@ -104,30 +120,6 @@ pulumi new typescript --name "infra-k3s" \
 
 #+begin_quote
 *Note*: This will create a new typescript pulumi project named ~infra-k3s~, a stack named ~dev~, and a configuration file (~Pulumi.dev.yaml~) containing the server SSH key for remote connection as well as the IP address (obtained from ~nmap~) of the server and user account logging in.
-#+end_quote
-
-**** New application project
-
-Next, we need to create a stack to manage our ~home-assistant~ application deployment.
-
-As with the infrastructure stack, we can create and configure our stack by passing in the ~--config~ parameter to the ~pulumi new~ command, as follows:
-
-#+begin_quote
-*Note*: Make sure you run the commands below in the correct sub-folder. I.E - ~cd [path/to]/home-assistant/app-homeassistant~
-#+end_quote
-
-#+begin_src bash
-# Create the pulumi project and pass in configuration key/value pairs
-pulumi new typescript --name "app-homeassistant" \
-    --stack "dev" \
-    --config="org=myhome" \
-    --secret \
-    --config="serverKey=$(cat /path/to/private/ssh/key)" \
-    --config="serverProject=infra-k3s"
-#+end_srcg
-
-#+begin_quote
-*Note*: This will create a new typescript pulumi project named ~app-homeassistant~, a stack named ~dev~, and a configuration file (~Pulumi.dev.yaml~) containing the pulumi organization ~myhome~, the server SSH key for remote connection, and the name of the infrastructure project we created earlier.
 #+end_quote
 
 **** Existing projects
@@ -152,25 +144,10 @@ nmap -n -A <server hostname> -oG - | awk '/Up$/{print $2}' | pulumi config set s
 pulumi config set serverUser <user name>
 #+end_src
 
-Next, we must select the ~dev~ stack of our application deployment project ~app-homeassistant~:
-
-#+begin_src bash
-cd ~/documents/home-assistant/app-homeassistant && pulumi stack select myhome/dev
-#+end_src
-
-Then, populate the pulumi configuration file for ~app-homeassistant~:
-
-#+begin_src bash
-cat ~/path/to/ssh/private/key | pulumi config set --secret serverKey
-pulumi config set org myhome
-pulumi config set serverProject infra-k3s
-#+end_src
-
-Finally, for the projects to compile we must download the code package dependencies from ~npm~ referenced in each project's ~package.json~:
+Finally, for the projects to compile we must download the code package dependencies from ~npm~ referenced in the project's ~package.json~:
 
 #+begin_src bash
 cd ~/documents/home-assistant/infra-k3s && npm install
-cd ~/documents/home-assistant/app-homeassistant && npm install
 #+end_src
 
 *** Deployment
@@ -188,45 +165,86 @@ pulumi up -y
 
 Once the ~infra-k3s~ stack is deployed, we can deploy the ~app-homeassistant~ application stack.
 
-#+begin_quote
-*Note*: Make sure you're in the ~app-homeassistant~ sub-folder. ~cd ../app-homeassistant~
-#+end_quote
+** Application (Home Assistant) deployment
 
-#+begin_src bash
-# Deploy the pulumi app-homeassistant dev stack
-pulumi up -y
-#+end_src
-
-** Home Assistant deployment
+This guide will deploy the ~home-assistant~ application to the ~k3s~ infrastructure defined in the previous section.
 
 *** Scaffold and configuration
 
 Once the ~infra-k3s~ stack is up, we're ready to deploy our ~app-homeassistant~ application.
 
-**** Existing project
+**** New project
 
-First, we must initialise the stack:
+Next, we need to create a stack to manage our ~home-assistant~ application deployment.
+
+As with the infrastructure stack, we can create and configure our stack by passing in the ~--config~ parameter to the ~pulumi new~ command, as follows:
+
+#+begin_quote
+*Note*: Make sure you run the commands below in the correct sub-folder. I.E - ~cd [path/to]/home-assistant/app-homeassistant~
+#+end_quote
 
 #+begin_src bash
-cd ~/documents/home-assistant/app-homeassistant && pulumi stack init myhome/dev
+# Create the pulumi project and pass in configuration key/value pairs
+pulumi new typescript --name "app-homeassistant" \
+    --stack "dev" \
+    --config="org=myhome" \
+    --secret \
+    --config="serverKey=$(cat /path/to/private/ssh/key)" \
+    --config="serverProject=infra-k3s"
+#+end_srcg
+
+#+begin_quote
+*Note*: This will create a new typescript pulumi project named ~app-homeassistant~, a stack named ~dev~, and a configuration file (~Pulumi.dev.yaml~) containing the pulumi organization ~myhome~, the server SSH key for remote connection, and the name of the infrastructure project we created earlier.
+#+end_quote
+
+**** Existing project
+
+Next, using the code repository we cloned from Github earlier, we must select the ~dev~ stack of our application deployment project ~app-homeassistant~:
+
+#+begin_src bash
+cd ~/documents/home-assistant/app-homeassistant && pulumi stack select myhome/dev
 #+end_src
 
-Next, set the configuration we need for this stack.
+Then, populate the pulumi configuration file for ~app-homeassistant~:
 
 #+begin_src bash
 cat ~/path/to/ssh/private/key | pulumi config set --secret serverKey
 pulumi config set org myhome
-pulumi config set serverStack infra-k3s
+pulumi config set serverProject infra-k3s
+#+end_src
+
+Finally, for the projects to compile we must download the code package dependencies from ~npm~ referenced in the project's ~package.json~:
+
+#+begin_src bash
+cd ~/documents/home-assistant/app-homeassistant && npm install
 #+end_src
 
 *** Deployment
 
 With the applications to deploy defined within the project (typically ~index.ts~), we can deploy our ~app-homeassistant~ suite.
 
+#+begin_quote
+*Note*: Make sure you're in the ~app-homeassistant~ sub-folder. ~cd ../app-homeassistant~
+#+end_quote
+
 #+begin_src bash
 # Deploy the pulumi dev stack
 pulumi up -y
 #+end_src
+
+** Integrations (Google Cloud) deployment
+
+This guide will outline how to deploy the integrations to ~home-assistant~ from ~gcp~.
+
+*** Pre-requisites
+
+This guide assumes the following:
+
+1. You have an account up to use the [[https://console.cloud.google.com/][Google Cloud Platform]].
+2. You have a project created in ~gcp~ for Pulumi to interact with.
+
+*** Scaffold and configuration
+
 
 
 ** Install Docker

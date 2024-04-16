@@ -1,0 +1,7 @@
+name: infra-gcp
+runtime: nodejs
+description: Manages home-assistant integrations with Google devices
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: gcp-typescript

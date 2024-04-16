@@ -2,7 +2,7 @@
   "version": "0.1.0",
   "configurations": [
     {
-      "name": "TS Pulumi k3s-infra index.ts",
+      "name": "TS Pulumi app-homeassistant index.ts",
       "type": "node",
       "request": "launch",
       "args": ["${workspaceFolder}/index.ts"],
