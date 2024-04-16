@@ -236,7 +236,11 @@ pulumi up -y
 
 This guide will outline how to deploy the integrations to ~home-assistant~ within a ~gcp~ project.
 
-*** Enable services
+#+begin_quote
+**Note**: Refer to the section _Google Cloud authentication_ above to set the ~gcp~ configuration and log in to the correct project.
+#+end_quote
+
+*** Enable GCP services
 
 First, we must enable the required integration services within ~gcp~:
 
@@ -246,7 +250,26 @@ gcloud services enable smartdevicemanagement.googleapis.com
 
 # Enable the cloud pub/sub api in the gcp api library
 gcloud services enable pubsub.googleapis.com
+
+# Enable the iam api in the gcp api library
+gcloud services enable iam.googleapis.com
 #+end_src
+
+*** Create an oauth consent for GCP (possibly deprecated)
+
+Next, we must consent for GCP to be available to external users.
+
+This must be enabled in the ~gcp~ console. Access _API's & Services_ in the left-menu of the ~gcp~ dashboard, select _OAuth consent screen_ in the left-menu of the next page, and then select "External" and click the _Create_ button.
+
+Fill out the relevant information:
+
+#+begin_quote
+**App name**: home-assistant
+**User support email**: <Your-Email>
+#+end_quote
+
+*** Home Assistant device integration
+
 
 ** Install Docker
 
