@@ -90,6 +90,16 @@ gcloud auth login --no-launch-browser
 
 Use the code from the URL provided to obtain an access code and enter the code into the CLI.
 
+** Pulumi backend configuration
+
+Make sure to update the Pulumi configuration to use the correct organization by default:
+
+#+begin_src bash
+pulumi org set-default <org-name>
+#+end_src
+
+I've named the default organization for these projects as ~myhome~.
+
 ** Infrastructure deployment
 
 This guide will deploy ~k3s~ infrastructure to a ~raspberry-pi~ using Pulumi.
@@ -227,6 +237,14 @@ With the applications to deploy defined within the project (typically ~index.ts~
 *Note*: Make sure you're in the ~app-homeassistant~ sub-folder. ~cd ../app-homeassistant~
 #+end_quote
 
+We must ensure that we've authenticated with the Google API:
+
+#+begin_src
+gcloud auth application-default login
+#+end_src
+
+Now we should be able to raise the Pulumi stack:
+
 #+begin_src bash
 # Deploy the pulumi dev stack
 pulumi up -y
@@ -255,7 +273,7 @@ gcloud services enable pubsub.googleapis.com
 gcloud services enable iam.googleapis.com
 #+end_src
 
-*** Create an oauth consent for GCP (possibly deprecated)
+*** Create an Oauth consent for GCP
 
 Next, we must consent for GCP to be available to external users.
 
@@ -268,8 +286,24 @@ Fill out the relevant information:
 **User support email**: <Your-Email>
 #+end_quote
 
-*** Home Assistant device integration
+*** Create credentials for a new Oauth Client ID
 
+Under _Credentials_, select _Create Credentials_ and the _Oauth client ID_.
+
+Fill out the relevant information:
+
+#+begin_quote
+**Application type**: Web application
+**Name**: home-assistant-oauth-client
+#+end_quote
+
+Under _Authorized redirect URIs_, select **Add URI** as enter ~https://my.home-assistant.io/redirect/oauth~. Then, click the _Create_ button.
+
+Note the **Client ID** and **Client Secret** - you need to add these into ~home-assistant~ when adding a new Google device.
+
+*** Create a device access project
+
+Next, access the [[https://console.nest.google.com/device-access/][device access console]] and follow through the payment flow - this will cost a one-off $5 developer registration fee.
 
 ** Install Docker
 
