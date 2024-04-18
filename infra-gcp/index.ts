@@ -1,4 +1,5 @@
 import * as pulumi from "@pulumi/pulumi";
+import * as command from "@pulumi/command";
 import * as gcp from "@pulumi/gcp";
 
 async function main() {
@@ -20,15 +21,25 @@ async function main() {
     });
     // TODO: Implement key rotation
     // TODO: Implement hashicorp vault into infra-k3s to manage keys/rotation
-    // Create a key for the service account
+    // Create a key for the gcp service account
     const serviceAccountKey = new gcp.serviceaccount.Key("ha-admin-service-account-key",{
         serviceAccountId: serviceAccount.name,
         publicKeyType: "TYPE_X509_PEM_FILE"
+    }, {
+        dependsOn: serviceAccount
+    });
+    // Create a gcp identity access token
+    const identityTokenCommand = `gcloud auth print-identity-token`;
+    const identityToken = new command.local.Command("run-identity-token-command",{
+        create: identityTokenCommand
+    }, {
+        dependsOn: serviceAccountKey
     });
     // Return output
     return {
         serviceAccountId: serviceAccount.accountId,
         serviceAccountRoles: tokenCreatorRoleBinding.role,
+        serviceAccountKeyId: serviceAccountKey.id,
         serviceAccountKeyName: serviceAccountKey.name
     }
 }
