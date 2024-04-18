@@ -19,6 +19,3 @@ export async function installHelm(connectionObj: iConnectionObj, dependency?: re
   });
   return installHelm;
 }
-
-// TODO: Async function to install nginx helm chart
-// TODO: Async function to install home-assistant helm chart

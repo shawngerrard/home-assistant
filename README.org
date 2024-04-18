@@ -250,13 +250,25 @@ Now we should be able to raise the Pulumi stack:
 pulumi up -y
 #+end_src
 
-** Integrations (Google Cloud) deployment
+** Integrating Google Cloud with Home Assistant
 
-This guide will outline how to deploy the integrations to ~home-assistant~ within a ~gcp~ project.
+This guide will outline how integrate ~home-assistant~ within a ~gcp~ project by using the [[https://console.cloud.google.com/][Google Cloud console]] to configure an OAuth 2.0 client, and then use the client to facilitate integration between ~home-assistant~ and a new [[https://console.nest.google.com/][Google Nest project]].
+
+#+begin_quote
+**Note**: These steps are mostly manual as Google does not offer an API to programatically create or update OAuth 2.0 Clients - refer to [[https://stackoverflow.com/questions/69539734/pulumi-gcp-manage-oauth2-0-client-id-redirect-uri][StackOverflow and the link in the answer section]] for more information. These manual steps can also be followed by the guide provided in Home Assistant when adding a new device.
+#+end_quote
 
 #+begin_quote
 **Note**: Refer to the section _Google Cloud authentication_ above to set the ~gcp~ configuration and log in to the correct project.
 #+end_quote
+
+*** Future updates
+
+**** TODO Investigate use of gcp identity platform (idp) to automate creation of OAuth 2.0 Clients in GCP.
+
+- [[https://cloud.google.com/identity-platform/pricing#identity-platform-pricing][IDP appears mostly free]] - refer to the Google pricing model.
+
+**** TODO Investigate use of service accounts within Home Assistant and GCP to automate deployment.
 
 *** Enable GCP services
 
@@ -303,9 +315,25 @@ Note the **Client ID** and **Client Secret** - you need to add these into ~home-
 
 *** Create a device access project
 
-Next, access the [[https://console.nest.google.com/device-access/][device access console]] and follow through the payment flow - this will cost a one-off $5 developer registration fee.
+Next, access the [[https://console.nest.google.com/device-access/][Nest device access console]] and follow through the payment flow - this will cost a one-off $5 developer registration fee.
 
-** Install Docker
+Once you have access to the console, create a new project. You'll need to add in the **Client ID** you created earlier.
+
+Note the **Project ID** - you need to add this into ~home-assistant~ when adding a new Google device.
+
+*** Create a Home Assistant administrator
+
+You can access ~home-assistant~ by pointing your browser to ~http://<your server local ip address>:<nodeport port>~.
+
+Once there, create a new user to enter the ~home-assistant~ dashboard.
+
+*** Add a Google Nest device to Home Assistant
+
+In ~home-assistant~, go to **Settings > Devices and services** and then click _Add device_.
+
+Follow the steps and enter in the details provided from the steps above (gcp project id, oauth client id, nest device access project id).
+
+** Install Home Assistant with Docker
 
 To start with, we'll be running our Home Assistant application in a Docker container.
 
