@@ -44,4 +44,4 @@ async function main() {
     }
 }
 // Invoke main and output logs
-export const serviceAccountDetails = main();
+//export const serviceAccountDetails = main();

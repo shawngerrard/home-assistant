@@ -1,4 +1,4 @@
-import { remote } from "@pulumi/command";
+import { remote, local } from "@pulumi/command";
 import { iConnectionObj } from "../../bin/interfaces/connection";
 
 // Async function to install k3s
@@ -37,6 +37,19 @@ export async function setKubeConfigFilepath (connectionObj: iConnectionObj, depe
   });
   return kubeConfigEnv;
 }
+
+// Async function to download the server kubeconfig to local system and modify for cluster access
+export async function getLocalKubeConfig (connectionObj: iConnectionObj, dependency?: remote.Command): Promise<local.Command> {
+  // Remote command to globally set a permanent environment variable on the server
+  const localKubeConfig = new local.Command("Download kube config file", {
+    create: `mkdir -p ~/.kube && scp ${connectionObj.user}@${connectionObj.host}:/home/${connectionObj.user}/.kube/config ~/.kube && sed -i -e 's/server:.*$/server: https:\/\/${connectionObj.host}:6443/g' ~/.kube/config`,
+    delete: "rm -rf ~/.kube"
+  }, {
+    dependsOn: dependency
+  });
+  return localKubeConfig;
+}
+
 
 // (Deprecated) Async function to copy initial k3s namespace configuration files to remote server
 export async function copyNamespaceConfig(connectionObj: iConnectionObj, dependency?: remote.Command): Promise<remote.CopyFile> {

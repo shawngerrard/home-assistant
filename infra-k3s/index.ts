@@ -1,7 +1,9 @@
 import { getServerConnectionConfig } from "../bin/functions/connection";
 import { copyKubeConfig,
          installK3s,
-         setKubeConfigFilepath } from "./functions/k3sInstall";
+         setKubeConfigFilepath,
+         getLocalKubeConfig
+       } from "./functions/k3sInstall";
 import { installHelm } from "./functions/helmInstall";
 
 async function main() {
@@ -15,8 +17,10 @@ async function main() {
   const kubeConfig = await copyKubeConfig(connectionObj, installKube);
   // Create kubeconfig environment variable
   const kubeEnvVar = await setKubeConfigFilepath(connectionObj, kubeConfig);
+  // Configure local cluster access
+  const localKubeConfig = await getLocalKubeConfig(connectionObj, kubeEnvVar)
   // Install helm on server
-  const installHelmCli = await installHelm(connectionObj, kubeEnvVar);
+  const installHelmCli = await installHelm(connectionObj, localKubeConfig);
   // Return connection configuration
   return {
     serverIp: connectionObj.host,
