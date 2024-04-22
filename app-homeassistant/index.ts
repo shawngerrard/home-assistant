@@ -31,7 +31,7 @@ async function main() {
       nodePort: 30001
     }
   };
-  // Deploy the home-assistant remote chart
+  // Deploy the home-assistant local chart
   // TODO: Update helm charts repo as environment-specific multi-repo
   const appChart = new k8s.helm.v3.Chart("home-assistant",{
     path: chartPath,

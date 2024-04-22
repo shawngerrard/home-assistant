@@ -42,7 +42,7 @@ export async function setKubeConfigFilepath (connectionObj: iConnectionObj, depe
 export async function getLocalKubeConfig (connectionObj: iConnectionObj, dependency?: remote.Command): Promise<local.Command> {
   // Remote command to globally set a permanent environment variable on the server
   const localKubeConfig = new local.Command("Download kube config file", {
-    create: `mkdir -p ~/.kube && scp ${connectionObj.user}@${connectionObj.host}:/home/${connectionObj.user}/.kube/config ~/.kube && sed -i -e 's/server:.*$/server: https:\/\/${connectionObj.host}:6443/g' ~/.kube/config`,
+    create: `mkdir -p ~/.kube && scp ${connectionObj.user}@${connectionObj.host}:/home/${connectionObj.user}/.kube/config ~/.kube && sed -i 's/server:.*$/server: https:\\/\\/${connectionObj.host}:6443/g' ~/.kube/config`,
     delete: "rm -rf ~/.kube"
   }, {
     dependsOn: dependency
