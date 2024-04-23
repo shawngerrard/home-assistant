@@ -1,0 +1,3 @@
+name: app-nginx
+description: Stack to deploy the nginx ingress-controller service
+runtime: nodejs
