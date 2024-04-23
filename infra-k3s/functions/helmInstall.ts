@@ -1,8 +1,9 @@
+import { PersistentVolume } from "@pulumi/kubernetes/core/v1";
 import { remote, local } from "@pulumi/command";
 import { iConnectionObj } from "../../bin/interfaces/connection";
 
 // Async function to install helm
-export async function installHelm(connectionObj: iConnectionObj, dependency?: remote.Command | local.Command): Promise<remote.Command> {
+export async function installHelm(connectionObj: iConnectionObj, dependency?: remote.Command | local.Command | PersistentVolume): Promise<remote.Command> {
   // Remote command to install helm on the server
   const installHelm = new remote.Command("Install Helm", {
     create: "curl -fsSL --create-dirs -o ~/downloads/helm/get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3" +

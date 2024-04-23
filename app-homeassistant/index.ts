@@ -6,7 +6,7 @@
 
 import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
-import { getServerConnectionConfig } from "../bin/functions/connection";
+import { getInfraStackConfig } from "../bin/functions/infraConfig";
 
 async function main() {
   // Set the path for the local chart
@@ -19,8 +19,7 @@ async function main() {
       name: chartNamespace
     }
   });
-  // Obtain the server connection object
-  const connectionObj = await getServerConnectionConfig();
+  const infraConfigObj = await getInfraStackConfig();
   // Specify custom template settings for service in Helm values file
   // TODO: Update home-assistant helm chart values file to accept the following properties (rather than update here?)
   // TODO: Update NodePort to use either a LoadBalancer service or a ClusterIP service using an ingress resource
@@ -29,6 +28,12 @@ async function main() {
       type: "NodePort",
       port: 8080,
       nodePort: 30001
+    },
+    persistence: {
+      enabled: "true",
+      size: "500Gi",
+      accessModes: ["ReadWriteOnce"],
+      storageClass: infraConfigObj.storageClassName
     }
   };
   // Deploy the home-assistant local chart
@@ -42,7 +47,7 @@ async function main() {
     dependsOn: createNamespace
   });
   // Return the connection object for output (testing)
-  return connectionObj;
+  return customServiceValues;
 }
-// Export the connection object (testing)
-export const connectionObj = main();
+// Export the custom values supplied to the helm chart
+export const customServiceValues = main();

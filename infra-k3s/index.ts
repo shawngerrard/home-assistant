@@ -4,6 +4,7 @@ import { copyKubeConfig,
          setKubeConfigFilepath,
          getLocalKubeConfig
        } from "./functions/k3sInstall";
+import { createPersistentVolume, createStorageClass } from "./functions/k3sVolumes"
 import { installHelm } from "./functions/helmInstall";
 
 async function main() {
@@ -18,16 +19,22 @@ async function main() {
   // Create kubeconfig environment variable
   const kubeEnvVar = await setKubeConfigFilepath(connectionObj, kubeConfig);
   // Configure local cluster access
-  const localKubeConfig = await getLocalKubeConfig(connectionObj, kubeEnvVar)
+  const localKubeConfig = await getLocalKubeConfig(connectionObj, kubeEnvVar);
+  // Create storage class for the cluster
+  const createSc = await createStorageClass(localKubeConfig);
+  // Create persistent volume for the storage class
+  const createPv = await createPersistentVolume(createSc.metadata.name, createSc);
   // Install helm on server
-  const installHelmCli = await installHelm(connectionObj, localKubeConfig);
+  const installHelmCli = await installHelm(connectionObj, createPv);
   // Return connection configuration
   return {
     serverIp: connectionObj.host,
     serverPort: connectionObj.port,
-    serverUser: connectionObj.user
+    serverUser: connectionObj.user,
+    serverVolumeStorageClass: createPv.spec.storageClassName,
+    serverVolumeMountPath: createPv.spec.hostPath.path
   };
 }
 
 // Call main async function
-export const connectionConfig = main();
+export const infraConfig = main();
