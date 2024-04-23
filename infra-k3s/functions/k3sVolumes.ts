@@ -9,6 +9,7 @@ export async function createStorageClass(dependency?: remote.Command | local.Com
     metadata: {
       name: "sc-ssd-homepi-homeassistant"
     },
+    reclaimPolicy: "Retain",
     provisioner: "kubernetes.io/no-provisioner",
     volumeBindingMode: "WaitForFirstConsumer",
   }, {
