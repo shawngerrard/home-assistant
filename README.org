@@ -250,6 +250,91 @@ Now we should be able to raise the Pulumi stack:
 pulumi up -y
 #+end_src
 
+** Pod destruction and restructure errors
+
+It's important to note of what happens in an instance when the ~home-assistant~ pod crashes or is destructed somehow in terms of the effect this will have on the kubernetes resources and stack state.
+
+Effectively, when the ~home-assistant~ pod is taken down either through an error, a ~kubectl delete pod <pod name>~ command, or the ~home-assistant~ pulumi stack is destroyed with ~pulumi destroy~, we would attempt to bring the pod back online somehow - either through applying a direct redeployment of the statefulset, by initiating the ~pulumi up~ command to update the stack, or automatically by the control plane depending on the deployment topology and specifications (I.E high-availability/redundancy setups).
+
+Because ~pulumi~ doesn't have a methods to intercept events when resources created from a ~Helm chart~ are destroyed, there's no way native to ~pulumi~ to push commands to the kubernetes api server when these resources are destroyed. This means that the attached PersistentVolume definition remains in a ~released~ state as the ~uid~ is bound to the recently destroyed PersistentVolumeClaim (observable with ~kubectl get pv -o yaml~ and comparing to the ~uid~ in ~kubectl get pvc -o yaml~).
+
+This in-turn means that the pvc created by the ~home-assistant~ chart cannot be bound to the existing PV without flushing the ~uid~ of the pv with ~kubectl patch pv <pv name> --type json -p '[{"op": "remove", "path": "/spec/claimRef/uid"}]'~.
+
+There's multiple ways to deal with this:
+
+ - Set the reclaim policy of the pv's to ~delete~ rather than ~retain~ - this may result in data loss.
+
+ - Manually run either of the commands when the pvc is deleted:
+
+   #+begin_src bash
+# Run this command to remove the UID field from the pv spec
+kubectl patch pv packages-volume --type json -p '[{"op": "remove", "path": "/spec/claimRef/uid"}]'
+
+# Run this command to remove the whole claimRef section from the pv spec
+kubectl patch pv packages-volume --type json -p '[{"op": "remove", "path": "/spec/claimRef"}]'
+   #+end_src
+
+ - Define a kubernetes ~job~ in ~pulumi~ to poll the api server for instances of when a pvc is being destroyed, and then initiate a function to remove the uid from the pv spec:
+
+   #+begin_src typescript
+import * as pulumi from "@pulumi/pulumi";
+import * as k8s from "@pulumi/kubernetes";
+
+// Define the PVC deletion job
+const pvcDeletionJob = new k8s.batch.v1.Job("pvc-deletion-job", {
+    spec: {
+        template: {
+            metadata: {
+                labels: {
+                    app: "pvc-deletion-handler",
+                },
+            },
+            spec: {
+                containers: [{
+                    image: "bitnami/kubectl",
+                    args: [
+                        "wait",
+                        "--for=delete",
+                        "pvc",
+                        "--selector=app=my-helm-chart",
+                    ],
+                    name: "pvc-deletion-watcher",
+                }],
+                restartPolicy: "Never",
+            },
+        },
+    },
+});
+
+// Define the cleanup operation to remove the UID link from the PV metadata
+const removeUIDLink = async () => {
+    console.log("Removing UID link from PV metadata");
+    // Implement the logic to remove the UID link from the PV metadata
+};
+
+// Run the cleanup operation when the PVC deletion job completes
+pvcDeletionJob.status.apply(status => {
+    if (status && status.succeeded) {
+        removeUIDLink();
+    }
+});
+
+// Export any outputs if needed
+export const jobName = pvcDeletionJob.metadata.name;
+   #+end_src
+
+ - Create a [[https://slack.engineering/simple-kubernetes-webhook/][kubernetes webhook server]] that uses the [[https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/][kubernetes admission webhooks]] to intercept api requests to the kubernetes api and then mutate responses so that the associated pv's bound uid is flushed upon deletion of a pvc.
+
+ - Create a [[https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/ha-topology/][kubernetes highly-available topology]] to minimize application downtime and improve fault tolerance, and then utilize any of the previous steps to manage the failed pod restart.
+
+The more suitable method would be to either use the admission webhooks or opt for a highly-available topology. Because this project is prioritizing learning different aspects of the cloud-native realms, I'm opting for a simpler manual approach for now.
+
+#+begin_quote
+**TLDR**: Whenever the ~home-assistant~ pod or ~app-homeassistant~ pulumi stack is destroyed, we need to run the ~kubectl patch pv packages-volume --type json -p '[{"op": "remove", "path": "/spec/claimRef/uid"}]'~ command on the server before restarting the app stack/pod.
+#+end_quote
+
+*** TODO Implement either a webhook server or highly available topology to manage pvc reclaims
+
 ** Integrating Google Cloud with Home Assistant
 
 This guide will outline how integrate ~home-assistant~ within a ~gcp~ project by using the [[https://console.cloud.google.com/][Google Cloud console]] to configure an OAuth 2.0 client, and then use the client to facilitate integration between ~home-assistant~ and a new [[https://console.nest.google.com/][Google Nest project]].
