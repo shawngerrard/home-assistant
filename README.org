@@ -126,13 +126,13 @@ pulumi new typescript --name "infra-k3s" \
     --config="serverKey=$(cat /path/to/private/ssh/key)" \
     --config="serverIp=$(nmap -n -A <server hostname> -oG - | awk '/Up$/{print $2}')" \
     --config="serverUser=<server username>"
-#+end_srcg
+#+end_src
 
 #+begin_quote
-*Note*: This will create a new typescript pulumi project named ~infra-k3s~, a stack named ~dev~, and a configuration file (~Pulumi.dev.yaml~) containing the server SSH key for remote connection as well as the IP address (obtained from ~nmap~) of the server and user account logging in.
+**Note**: This will create a new typescript pulumi project named ~infra-k3s~, a stack named ~dev~, and a configuration file (~Pulumi.dev.yaml~) containing the server SSH key for remote connection as well as the IP address (obtained from ~nmap~) of the server and user account logging in.
 #+end_quote
 
-**** Existing projects
+**** Existing project
 
 First, we must clone our project from the repository:
 
@@ -201,10 +201,10 @@ pulumi new typescript --name "app-homeassistant" \
     --secret \
     --config="serverKey=$(cat /path/to/private/ssh/key)" \
     --config="serverProject=infra-k3s"
-#+end_srcg
+#+end_src
 
 #+begin_quote
-*Note*: This will create a new typescript pulumi project named ~app-homeassistant~, a stack named ~dev~, and a configuration file (~Pulumi.dev.yaml~) containing the pulumi organization ~myhome~, the server SSH key for remote connection, and the name of the infrastructure project we created earlier.
+**Note**: This will create a new typescript pulumi project named ~app-homeassistant~, a stack named ~dev~, and a configuration file (~Pulumi.dev.yaml~) containing the pulumi organization ~myhome~, the server SSH key for remote connection, and the name of the infrastructure project we created earlier.
 #+end_quote
 
 **** Existing project
@@ -252,7 +252,7 @@ pulumi up -y
 
 ** Pod destruction and restructure errors
 
-It's important to note of what happens in an instance when the ~home-assistant~ pod crashes or is destructed somehow in terms of the effect this will have on the kubernetes resources and stack state.
+It's important to note of what happens on the occassion that the ~home-assistant~ pod crashes or is destructed, in terms of the effect this will have on the kubernetes resources and stack state.
 
 Effectively, when the ~home-assistant~ pod is taken down either through an error, a ~kubectl delete pod <pod name>~ command, or the ~home-assistant~ pulumi stack is destroyed with ~pulumi destroy~, we would attempt to bring the pod back online somehow - either through applying a direct redeployment of the statefulset, by initiating the ~pulumi up~ command to update the stack, or automatically by the control plane depending on the deployment topology and specifications (I.E high-availability/redundancy setups).
 
