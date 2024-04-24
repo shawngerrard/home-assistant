@@ -45,7 +45,7 @@ If you haven't already, we must authenticate with Pulumi in order to interact wi
 #+end_quote
 
 #+begin_quote
-**Note**: Neither of the options listed below are secure on their own - please refer to Pulumi regarding [[https://www.pulumi.com/blog/using-pulumi-securely/][how to use it securely]].
+*Note*: Neither of the options listed below are secure on their own - please refer to Pulumi regarding [[https://www.pulumi.com/blog/using-pulumi-securely/][how to use it securely]].
 #+end_quote
 
 *** Update credentials.json with access token
@@ -129,7 +129,7 @@ pulumi new typescript --name "infra-k3s" \
 #+end_src
 
 #+begin_quote
-**Note**: This will create a new typescript pulumi project named ~infra-k3s~, a stack named ~dev~, and a configuration file (~Pulumi.dev.yaml~) containing the server SSH key for remote connection as well as the IP address (obtained from ~nmap~) of the server and user account logging in.
+*Note*: This will create a new typescript pulumi project named ~infra-k3s~, a stack named ~dev~, and a configuration file (~Pulumi.dev.yaml~) containing the server SSH key for remote connection as well as the IP address (obtained from ~nmap~) of the server and user account logging in.
 #+end_quote
 
 **** Existing project
@@ -204,7 +204,7 @@ pulumi new typescript --name "app-homeassistant" \
 #+end_src
 
 #+begin_quote
-**Note**: This will create a new typescript pulumi project named ~app-homeassistant~, a stack named ~dev~, and a configuration file (~Pulumi.dev.yaml~) containing the pulumi organization ~myhome~, the server SSH key for remote connection, and the name of the infrastructure project we created earlier.
+*Note*: This will create a new typescript pulumi project named ~app-homeassistant~, a stack named ~dev~, and a configuration file (~Pulumi.dev.yaml~) containing the pulumi organization ~myhome~, the server SSH key for remote connection, and the name of the infrastructure project we created earlier.
 #+end_quote
 
 **** Existing project
@@ -330,7 +330,7 @@ export const jobName = pvcDeletionJob.metadata.name;
 The more suitable method would be to either use the admission webhooks or opt for a highly-available topology. Because this project is prioritizing learning different aspects of the cloud-native realms, I'm opting for a simpler manual approach for now.
 
 #+begin_quote
-**TLDR**: Whenever the ~home-assistant~ pod or ~app-homeassistant~ pulumi stack is destroyed, we need to run the ~kubectl patch pv packages-volume --type json -p '[{"op": "remove", "path": "/spec/claimRef/uid"}]'~ command on the server before restarting the app stack/pod.
+*TL;DR*: Whenever the ~home-assistant~ pod or ~app-homeassistant~ pulumi stack is destroyed, we need to run the ~kubectl patch pv packages-volume --type json -p '[{"op": "remove", "path": "/spec/claimRef/uid"}]'~ command on the server before restarting the app stack/pod.
 #+end_quote
 
 *** TODO Implement either a webhook server or highly available topology to manage pvc reclaims
@@ -340,11 +340,11 @@ The more suitable method would be to either use the admission webhooks or opt fo
 This guide will outline how integrate ~home-assistant~ within a ~gcp~ project by using the [[https://console.cloud.google.com/][Google Cloud console]] to configure an OAuth 2.0 client, and then use the client to facilitate integration between ~home-assistant~ and a new [[https://console.nest.google.com/][Google Nest project]].
 
 #+begin_quote
-**Note**: These steps are mostly manual as Google does not offer an API to programatically create or update OAuth 2.0 Clients - refer to [[https://stackoverflow.com/questions/69539734/pulumi-gcp-manage-oauth2-0-client-id-redirect-uri][StackOverflow and the link in the answer section]] for more information. These manual steps can also be followed by the guide provided in Home Assistant when adding a new device.
+*Note*: These steps are mostly manual as Google does not offer an API to programatically create or update OAuth 2.0 Clients - refer to [[https://stackoverflow.com/questions/69539734/pulumi-gcp-manage-oauth2-0-client-id-redirect-uri][StackOverflow and the link in the answer section]] for more information. These manual steps can also be followed by the guide provided in Home Assistant when adding a new device.
 #+end_quote
 
 #+begin_quote
-**Note**: Refer to the section _Google Cloud authentication_ above to set the ~gcp~ configuration and log in to the correct project.
+*Note*: Refer to the section _Google Cloud authentication_ above to set the ~gcp~ configuration and log in to the correct project.
 #+end_quote
 
 *** Future updates
@@ -379,8 +379,8 @@ This must be enabled in the ~gcp~ console. Access _API's & Services_ in the left
 Fill out the relevant information:
 
 #+begin_quote
-**App name**: home-assistant
-**User support email**: <Your-Email>
+*App name*: home-assistant
+*User support email*: <Your-Email>
 #+end_quote
 
 *** Create credentials for a new Oauth Client ID
@@ -390,21 +390,21 @@ Under _Credentials_, select _Create Credentials_ and the _Oauth client ID_.
 Fill out the relevant information:
 
 #+begin_quote
-**Application type**: Web application
-**Name**: home-assistant-oauth-client
+*Application type*: Web application
+*Name*: home-assistant-oauth-client
 #+end_quote
 
-Under _Authorized redirect URIs_, select **Add URI** as enter ~https://my.home-assistant.io/redirect/oauth~. Then, click the _Create_ button.
+Under _Authorized redirect URIs_, select *Add URI* as enter ~https://my.home-assistant.io/redirect/oauth~. Then, click the _Create_ button.
 
-Note the **Client ID** and **Client Secret** - you need to add these into ~home-assistant~ when adding a new Google device.
+Note the *Client ID* and *Client Secret* - you need to add these into ~home-assistant~ when adding a new Google device.
 
 *** Create a device access project
 
 Next, access the [[https://console.nest.google.com/device-access/][Nest device access console]] and follow through the payment flow - this will cost a one-off $5 developer registration fee.
 
-Once you have access to the console, create a new project. You'll need to add in the **Client ID** you created earlier.
+Once you have access to the console, create a new project. You'll need to add in the *Client ID* you created earlier.
 
-Note the **Project ID** - you need to add this into ~home-assistant~ when adding a new Google device.
+Note the *Project ID* - you need to add this into ~home-assistant~ when adding a new Google device.
 
 *** Create a Home Assistant administrator
 
@@ -414,7 +414,7 @@ Once there, create a new user to enter the ~home-assistant~ dashboard.
 
 *** Add a Google Nest device to Home Assistant
 
-In ~home-assistant~, go to **Settings > Devices and services** and then click _Add device_.
+In ~home-assistant~, go to *Settings > Devices and services* and then click _Add device_.
 
 Follow the steps and enter in the details provided from the steps above (gcp project id, oauth client id, nest device access project id).
 
@@ -478,4 +478,3 @@ docker run -d \
 ** Access the Home Assistant dashboard
 
 Once the Docker container is up and running, the Home Assistant dashboard will be accessible using ~http://<host name/host ip network address>:8123/~.
-
