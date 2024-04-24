@@ -41,7 +41,7 @@ I'm running Home Assistant on the following specs:
 If you haven't already, we must authenticate with Pulumi in order to interact with the Pulumi Cloud API. We can do this a number of different ways - either log in via CLI or use an access token.
 
 #+begin_quote
-**Note**: Please refer to the definitions of both organizational and personal access tokens on the [[https://www.pulumi.com/docs/pulumi-cloud/access-management/access-tokens/][Pulumi website]]. This link will also provide the information on how to generate an access token. For the purposes of this guide, we will be creating a _personal access token_.
+*Note*: Please refer to the definitions of both organizational and personal access tokens on the [[https://www.pulumi.com/docs/pulumi-cloud/access-management/access-tokens/][Pulumi website]]. This link will also provide the information on how to generate an access token. For the purposes of this guide, we will be creating a _personal access token_.
 #+end_quote
 
 #+begin_quote
