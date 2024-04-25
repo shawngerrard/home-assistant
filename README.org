@@ -282,7 +282,7 @@ Because ~pulumi~ doesn't have a methods to intercept events when resources creat
 This in-turn means that the pvc created by the ~home-assistant~ chart cannot be bound to the existing PV without flushing the ~uid~ of the pv with:
 
 #+begin_src bash
-kubectl patch pv <pv name> --type json -p '[\{"op": "remove", "path": "/spec/claimRef/uid"\}]'
+kubectl patch pv <pv name> --type json -p '[{"op": "remove", "path": "/spec/claimRef/uid"}]'
 #+end_src
 
 There's multiple ways to deal with this:
