@@ -279,7 +279,11 @@ Effectively, when the ~home-assistant~ pod is taken down either through an error
 
 Because ~pulumi~ doesn't have a methods to intercept events when resources created from a ~Helm chart~ are destroyed, there's no way native to ~pulumi~ to push commands to the kubernetes api server when these resources are destroyed. This means that the attached PersistentVolume definition remains in a ~released~ state as the ~uid~ is bound to the recently destroyed PersistentVolumeClaim (observable with ~kubectl get pv -o yaml~ and comparing to the ~uid~ in ~kubectl get pvc -o yaml~).
 
-This in-turn means that the pvc created by the ~home-assistant~ chart cannot be bound to the existing PV without flushing the ~uid~ of the pv with ~kubectl patch pv <pv name> --type json -p '[\{"op": "remove", "path": "/spec/claimRef/uid"\}]'~.
+This in-turn means that the pvc created by the ~home-assistant~ chart cannot be bound to the existing PV without flushing the ~uid~ of the pv with:
+
+#+begin_src bash
+kubectl patch pv <pv name> --type json -p '[\{"op": "remove", "path": "/spec/claimRef/uid"\}]'
+#+end_src
 
 There's multiple ways to deal with this:
 
