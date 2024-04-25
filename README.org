@@ -100,7 +100,7 @@ pulumi org set-default <org-name>
 
 I've named the default organization for these projects as ~myhome~.
 
-** Infrastructure (k3s/helm) deployment
+** Infrastructure deployment (k3s/helm)
 
 This section will deploy ~k3s~ infrastructure to a ~raspberry-pi~ using Pulumi.
 
@@ -113,6 +113,10 @@ This section will deploy ~k3s~ infrastructure to a ~raspberry-pi~ using Pulumi.
 We must first create and configure the ~typescript~ pulumi project that will be used to install our infrastructure applications (E.G - ~k3s~, ~helm~, etc).
 
 **** New project
+
+#+begin_quote
+*Note*: If using my github code repository for these deployments, you can ignore this section and follow the next section _Existing project_.
+#+end_quote
 
 First, we need to create a stack to manage our infrastructure.
 
@@ -170,9 +174,11 @@ With the infrastructure to deploy defined within the project (typically ~index.t
 cd ~/documents/home-assistant/infra-k3s && pulumi up -y
 #+end_src
 
-Once the ~infra-k3s~ stack is deployed, we can deploy the ~app-homeassistant~ application stack.
+When the stack is up, you should have the ~kubeconfig~ file from the cluster present on your local system and configured to connect to your local server. You can view this with ~cat ~/.kube/config~.
 
-** Ingress controller (nginx ingress-controller) deployment
+Once the ~infra-k3s~ stack is deployed, we can continue on with the rest of the deployments below.
+
+** Ingress controller deployment (nginx-ingress-controller)
 
 This section will deploy the ~nginx-ingress-controller~ to the ~k3s~ infrastructure defined in the _Infrastructure deployment_ section.
 
@@ -194,7 +200,6 @@ The code attempts to obtain stack references from the ~myhome/infra-k3s/dev~ sta
 
 #+begin_src bash
 cd ~/documents/home-assistant/app-nginx
-cat ~/path/to/ssh/private/key | pulumi config set --secret serverKey
 pulumi config set org myhome
 pulumi config set serverProject infra-k3s
 #+end_src
@@ -216,7 +221,7 @@ Now we should be able to raise the Pulumi stack:
 cd ~/documents/home-assistant/app-nginx && pulumi up -y
 #+end_src
 
-** Application (home assistant) deployment
+** Application deployment (home-assistant)
 
 This section will deploy the ~home-assistant~ application to the ~k3s~ infrastructure defined in the _Infrastructure deployment_ section.
 
@@ -237,6 +242,7 @@ cd ~/documents/home-assistant/app-homeassistant && pulumi stack select myhome/de
 The code attempts to obtain stack references from the ~myhome/infra-k3s/dev~ stack. To enable Pulumi to achieve this, we need to populate the pulumi configuration file for ~app-homeassistant~:
 
 #+begin_src bash
+cd ~/documents/home-assistant/app-homeassistant
 cat ~/path/to/ssh/private/key | pulumi config set --secret serverKey
 pulumi config set org myhome
 pulumi config set serverProject infra-k3s
