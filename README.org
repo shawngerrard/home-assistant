@@ -283,7 +283,7 @@ This in-turn means that the pvc created by the ~home-assistant~ chart cannot be 
 
 There's multiple ways to deal with this:
 
- - Set the reclaim policy of the pv's to ~delete~ rather than ~retain~ - this may result in data loss.
+ - Set the reclaim policy of the pv's to ~delete~ rather than ~retain~ - this may result in data loss. I don't recommend this option without a data recovery/backup procedure (not yet covered by this repository).
 
  - Manually run either of the commands when the pvc is deleted:
 
