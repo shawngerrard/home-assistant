@@ -149,6 +149,7 @@ cd ~/documents/home-assistant/infra-k3s && pulumi stack select myhome/dev
 And also populate the pulumi configuration file for ~infra-k3s~:
 
 #+begin_src bash
+cd ~/documents/home-assistant/infra-k3s
 cat ~/path/to/ssh/private/key | pulumi config set --secret serverKey
 nmap -n -A <server hostname> -oG - | awk '/Up$/{print $2}' | pulumi config set serverIp
 pulumi config set serverUser <user name>
@@ -164,13 +165,9 @@ cd ~/documents/home-assistant/infra-k3s && npm install
 
 With the infrastructure to deploy defined within the project (typically ~index.ts~), we can deploy our ~infra-k3s~ suite.
 
-#+begin_quote
-*Note*: Make sure you're in the ~infra-k3s~ sub-folder. ~cd ../infra-k3s~
-#+end_quote
-
 #+begin_src bash
 # Deploy the pulumi infra-k3s dev stack
-pulumi up -y
+cd ~/documents/home-assistant/infra-k3s && pulumi up -y
 #+end_src
 
 Once the ~infra-k3s~ stack is deployed, we can deploy the ~app-homeassistant~ application stack.
@@ -179,9 +176,45 @@ Once the ~infra-k3s~ stack is deployed, we can deploy the ~app-homeassistant~ ap
 
 This section will deploy the ~nginx-ingress-controller~ to the ~k3s~ infrastructure defined in the _Infrastructure deployment_ section.
 
+#+begin_quote
+*Note*: Make sure you run the commands in this section in the correct sub-folder. I.E - ~cd [path/to]/home-assistant/app-nginx~
+#+end_quote
+
 *** Scaffold and configuration
 
+Once the ~infra-k3s~ stack is up, we're ready to deploy our ~app-nginx~ ingress controller.
 
+Using the code repository we cloned from Github in the _Infrastructure deployment_ section, we must select the ~myhome~ org and ~dev~ stack of our application deployment project ~app-nginx~:
+
+#+begin_src bash
+cd ~/documents/home-assistant/app-nginx && pulumi stack select myhome/dev
+#+end_src
+
+The code attempts to obtain stack references from the ~myhome/infra-k3s/dev~ stack. To enable Pulumi to achieve this, we need to populate the pulumi configuration file for ~app-nginx~:
+
+#+begin_src bash
+cd ~/documents/home-assistant/app-nginx
+cat ~/path/to/ssh/private/key | pulumi config set --secret serverKey
+pulumi config set org myhome
+pulumi config set serverProject infra-k3s
+#+end_src
+
+Finally, for the projects to compile we must download the code package dependencies from ~npm~ referenced in the project's ~package.json~:
+
+#+begin_src bash
+cd ~/documents/home-assistant/app-nginx && npm install
+#+end_src
+
+*** Deployment
+
+With the applications to deploy defined within the project (typically ~index.ts~), we can deploy our ~app-nginx~ suite.
+
+Now we should be able to raise the Pulumi stack:
+
+#+begin_src bash
+# Deploy the pulumi dev stack
+cd ~/documents/home-assistant/app-nginx && pulumi up -y
+#+end_src
 
 ** Application (home assistant) deployment
 
@@ -219,10 +252,6 @@ cd ~/documents/home-assistant/app-homeassistant && npm install
 
 With the applications to deploy defined within the project (typically ~index.ts~), we can deploy our ~app-homeassistant~ suite.
 
-#+begin_quote
-*Note*: Make sure you're in the ~app-homeassistant~ sub-folder. ~cd ../app-homeassistant~
-#+end_quote
-
 We must ensure that we've authenticated with the Google API:
 
 #+begin_src
@@ -233,7 +262,7 @@ Now we should be able to raise the Pulumi stack:
 
 #+begin_src bash
 # Deploy the pulumi dev stack
-pulumi up -y
+cd ~/documents/home-assistant/app-homeassistant && pulumi up -y
 #+end_src
 
 ** Pod destruction and restructure errors
