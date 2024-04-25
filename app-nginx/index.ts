@@ -23,36 +23,17 @@ async function main() {
     }
   });
   const infraConfigObj = await getInfraStackConfig();
-  // Specify custom template settings for service in Helm values file
-  // TODO: Update home-assistant helm chart values file to accept the following properties (rather than update here?)
-  // TODO: Update NodePort to use either a LoadBalancer service or a ClusterIP service using an ingress resource
-  /* These need to be updated to suit nginx
-  const customServiceValues = {
-    service: {
-      type: "NodePort",
-      port: 8080,
-      nodePort: 30001
-    },
-    persistence: {
-      enabled: "true",
-      size: "500Gi",
-      accessModes: ["ReadWriteOnce"],
-      storageClass: infraConfigObj.storageClassName
-    }
-  };
   // Deploy the home-assistant local chart
   // TODO: Update helm charts repo as environment-specific multi-repo
   const appChart = new k8s.helm.v3.Chart("nginx",{
     path: chartPath,
     // TODO: Update infra and deployment repo into environment-specific multi-repo
-    namespace: chartNamespace,
-    values: customServiceValues
+    namespace: chartNamespace
   },{
     dependsOn: createNamespace
   });
   // Return the connection object for output (testing)
-  */
-  return "";
+  return appChart.getResource("apps/v1/Deployment", "nginx").metadata.name.apply(name => { return name });
 }
 // Export the custom values supplied to the helm chart
-//export const customServiceValues = main();
+export const customServiceValues = main();
