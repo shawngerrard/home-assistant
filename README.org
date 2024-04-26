@@ -248,10 +248,24 @@ pulumi config set org myhome
 pulumi config set serverProject infra-k3s
 #+end_src
 
-Finally, for the projects to compile we must download the code package dependencies from ~npm~ referenced in the project's ~package.json~:
+For the project to compile we must download the code package dependencies from ~npm~ referenced in the project's ~package.json~:
 
 #+begin_src bash
 cd ~/documents/home-assistant/app-homeassistant && npm install
+#+end_src
+
+Ideally, we want to use and configure a dedicated DNS server to resolve the hostname ~dev.homeassistant.local~. However, we can get around this by modifying our local ~hosts~ file.
+
+#+begin_quote
+*Note*: The ~hosts~ file can be found:
+ - In UNIX: ~/etc/hosts~
+ - In Windows: ~C:\Windows\System32\drivers\etc\hosts~
+#+end_quote
+
+At the end of the file, we can place the following:
+
+#+begin_src
+<local ip address of server> dev.homeassistant.local
 #+end_src
 
 *** Deployment
@@ -269,6 +283,33 @@ Now we should be able to raise the Pulumi stack:
 #+begin_src bash
 # Deploy the pulumi dev stack
 cd ~/documents/home-assistant/app-homeassistant && pulumi up -y
+#+end_src
+
+Once the stack is up, we need to configure ~home-assistant~ so that it will trust ~nginx-ingress-controller~ as a reverse proxy, otherwise the ~home-assistant~ logs will show errors when attempting to make connections using the hostname.
+
+#+begin_quote
+*Note*: We could use a ConfigMap to perform the following steps, however this _may_ make data volume snapshots more difficult to achieve. There's an [[https://github.com/pajikos/home-assistant-helm-chart/issues/30][open issue on Github]] relating to this and our next steps.
+#+end_quote
+
+To configure ~home-assistant~, we must first access the pod:
+
+#+begin_src bash
+kubectl exec -it $(kubectl get pod -l app.kubernetes.io/name=home-assistant -n home-assistant-dev -o jsonpath="{.items[0].metadata.name}") -n home-assistant-dev -- bash
+#+end_src
+
+Then, we need to edit the ~configuration.yaml~ by using the ~vi /config/configuration.yaml~ command. We then add the following at the bottom of the file:
+
+#+begin_src
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 10.42.0.0/16 # or we can use the IP to the nginx pod - 10.42.0.n
+#+end_src
+
+Save by pressing ~ESC~ and type ~:wq~ to save and exit the file. Try accessing ~dev.homeassistant.local~, however we may need to refresh the ~home-assistant~ pod with:
+
+#+begin_src
+kubectl rollout restart -n home-assistant statefulset.apps/home-assistant
 #+end_src
 
 ** Pod destruction and restructure errors

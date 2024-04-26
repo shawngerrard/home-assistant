@@ -29,14 +29,8 @@ async function main() {
       }]
     },
     service: {
-      port: 8080
+      port: 80
     },
-    /* Deprecated - replaced with nginx-ingress-controller
-    service: {
-      type: "NodePort",
-      port: 8080,
-      nodePort: 30001
-    },*/
     persistence: {
       enabled: "true",
       size: "500Gi",
