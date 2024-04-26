@@ -1,5 +1,6 @@
 import { getServerConnectionConfig } from "../bin/functions/connection";
-import { copyKubeConfig,
+import { createNamespace,
+         copyKubeConfig,
          installK3s,
          setKubeConfigFilepath,
          getLocalKubeConfig
@@ -20,19 +21,24 @@ async function main() {
   const kubeEnvVar = await setKubeConfigFilepath(connectionObj, kubeConfig);
   // Configure local cluster access
   const localKubeConfig = await getLocalKubeConfig(connectionObj, kubeEnvVar);
+  // Create a home-assistant namespace in the new cluster
+  const homeAssistantNamespace = await createNamespace("home-assistant", localKubeConfig);
   // Create storage class for the cluster
-  const createSc = await createStorageClass(localKubeConfig);
+  const storageClass = await createStorageClass(localKubeConfig);
   // Create persistent volume for the storage class
-  const createPv = await createPersistentVolume(createSc.metadata.name, createSc);
+  const persistentVolume = await createPersistentVolume(homeAssistantNamespace.metadata.name,
+                                                        storageClass.metadata.name,
+                                                        storageClass);
   // Install helm on server
-  const installHelmCli = await installHelm(connectionObj, createPv);
+  const installHelmCli = await installHelm(connectionObj, persistentVolume);
   // Return connection configuration
   return {
     serverIp: connectionObj.host,
     serverPort: connectionObj.port,
     serverUser: connectionObj.user,
-    serverVolumeStorageClass: createPv.spec.storageClassName,
-    serverVolumeMountPath: createPv.spec.hostPath.path
+    serverVolumeStorageClass: persistentVolume.spec.storageClassName,
+    serverVolumeMountPath: persistentVolume.spec.hostPath.path,
+    homeAssistantNamespace: homeAssistantNamespace.metadata.name
   };
 }
 

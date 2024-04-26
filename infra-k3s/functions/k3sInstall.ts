@@ -1,3 +1,5 @@
+import { Output, getStack } from "@pulumi/pulumi";
+import { Namespace } from "@pulumi/kubernetes/core/v1/";
 import { remote, local } from "@pulumi/command";
 import { iConnectionObj } from "../../bin/interfaces/connection";
 
@@ -50,6 +52,17 @@ export async function getLocalKubeConfig (connectionObj: iConnectionObj, depende
   return localKubeConfig;
 }
 
+export async function createNamespace(namespaceName: string, dependency?: local.Command): Promise<Namespace> {
+  // Create a home-assistant-{stack} namespace in k3s
+  const createNamespace = new Namespace(`Create home-assistant namespace`, {
+    metadata: {
+      name: `${namespaceName}-${getStack()}`
+    }
+  },{
+    dependsOn: dependency
+  });
+  return createNamespace
+}
 
 // (Deprecated) Async function to copy initial k3s namespace configuration files to remote server
 export async function copyNamespaceConfig(connectionObj: iConnectionObj, dependency?: remote.Command): Promise<remote.CopyFile> {

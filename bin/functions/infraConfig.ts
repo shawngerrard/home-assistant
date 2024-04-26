@@ -9,6 +9,8 @@ export async function getInfraStackConfig() {
   const config = new pulumi.Config(projectName);
   // Create infra stack config object using either config or stack references
   const infraStackConfigObj = projectName.includes("infra-") ? {
+    homeAssistantNamespace: config.require("homeAssistantNamespace"),
+    serverIp: config.require("serverIp"),
     storageClassName: config.require("serverVolumeStorageClass"),
     persistentVolumeMountPath: config.require("serverVolumeMountPath")
   } as iInfraStackConfig : await getInfraStackConfigFromStackOutput(config);
@@ -24,6 +26,12 @@ async function getInfraStackConfigFromStackOutput(config: pulumi.Config): Promis
   const infraConfig = stackRef.getOutput("infraConfig");
   // Set the infra stack config object
   const infraStackConfigObj: iInfraStackConfig = {
+    homeAssistantNamespace: infraConfig.apply(config => {
+      return config.homeAssistantNamespace
+    }),
+    serverIp: infraConfig.apply(config => {
+      return config.serverIp
+    }),
     storageClassName: infraConfig.apply(config => {
       return config.serverVolumeStorageClass
     }),

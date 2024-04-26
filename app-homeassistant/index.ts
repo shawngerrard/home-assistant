@@ -13,24 +13,30 @@ async function main() {
   const infraConfigObj = await getInfraStackConfig();
   // Set the path for the local chart
   const chartPath = "./../../helm-charts/charts/home-assistant";
-  // Set the namespace name to create/use for the chart
-  // TODO: Abstract creation of chartNamespace to a higher-level so that this can be reused - perhaps infra-k3s? E.G `${config.namespace}-${pulumi.getStack()}`
-  const chartNamespace = `home-assistant-${pulumi.getStack()}`;
-  // (Deprecated - added to app-nginx) Create a k3s namespace for the app
-  /*const createNamespace = new k8s.core.v1.Namespace(`Create ${chartNamespace} namespace`, {
-    metadata: {
-      name: chartNamespace
-    }
-  });*/
   // Specify custom template settings for service in Helm values file
   // TODO: Update home-assistant helm chart values file to accept the following properties (rather than update here?)
   // TODO: Update NodePort to use either a LoadBalancer service or a ClusterIP service using an ingress resource
   const customServiceValues = {
+    ingress: {
+      enabled: true,
+      className: "nginx",
+      hosts: [{
+        host: "dev.homeassistant.local",
+        paths: [{
+          path: "/",
+          pathType: "Prefix"
+        }],
+      }]
+    },
+    service: {
+      port: 8080
+    },
+    /* Deprecated - replaced with nginx-ingress-controller
     service: {
       type: "NodePort",
       port: 8080,
       nodePort: 30001
-    },
+    },*/
     persistence: {
       enabled: "true",
       size: "500Gi",
@@ -43,7 +49,7 @@ async function main() {
   const appChart = new k8s.helm.v3.Chart("home-assistant",{
     path: chartPath,
     // TODO: Update infra and deployment repo into environment-specific multi-repo
-    namespace: chartNamespace,
+    namespace: infraConfigObj.homeAssistantNamespace,
     values: customServiceValues
   });
   // Return the connection object for output (testing)

@@ -19,12 +19,12 @@ export async function createStorageClass(dependency?: remote.Command | local.Com
 }
 
 // Async function to create a persistent volume in the cluster
-export async function createPersistentVolume (storageClassName: Output<string>, dependency?: remote.Command | local.Command | StorageClass): Promise<PersistentVolume> {
+export async function createPersistentVolume (namespaceName: Output<string>, storageClassName: Output<string>, dependency?: remote.Command | local.Command | StorageClass): Promise<PersistentVolume> {
   // Definition of persistent volume
   const createPv = new PersistentVolume("Apply persistent volume", {
     metadata: {
       name: "pv-ssd-homepi-homeassistant",
-      namespace: "app-homeassistant-dev"
+      namespace: namespaceName
     },
     spec: {
       capacity: {

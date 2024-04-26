@@ -7,30 +7,20 @@
  *
 */
 
-import * as pulumi from "@pulumi/pulumi";
-import * as k8s from "@pulumi/kubernetes";
+import { Chart } from "@pulumi/kubernetes/helm/v3";
 import { getInfraStackConfig } from "../bin/functions/infraConfig";
 
 async function main() {
+  // Obtain the infra-k3s config via stack references
+  const infraConfigObj = await getInfraStackConfig();
   // Set the path for the local chart
   const chartPath = "./../../helm-charts/charts/nginx-ingress";
-  // Set the namespace name to create/use for the chart
-  const chartNamespace = `home-assistant-${pulumi.getStack()}`;
-  // Create a k3s namespace that nginx will manage
-  const createNamespace = new k8s.core.v1.Namespace(`Create ${chartNamespace} namespace`, {
-    metadata: {
-      name: chartNamespace
-    }
-  });
-  const infraConfigObj = await getInfraStackConfig();
   // Deploy the home-assistant local chart
   // TODO: Update helm charts repo as environment-specific multi-repo
-  const appChart = new k8s.helm.v3.Chart("nginx",{
+  const appChart = new Chart("nginx",{
     path: chartPath,
     // TODO: Update infra and deployment repo into environment-specific multi-repo
-    namespace: chartNamespace
-  },{
-    dependsOn: createNamespace
+    namespace: infraConfigObj.homeAssistantNamespace
   });
   // Return the connection object for output (testing)
   return appChart.getResource("apps/v1/Deployment", "nginx").metadata.name.apply(name => { return name });
