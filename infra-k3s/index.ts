@@ -24,7 +24,7 @@ async function main() {
   // Create a home-assistant namespace in the new cluster
   const homeAssistantNamespace = await createNamespace("home-assistant", localKubeConfig);
   // Create storage class for the cluster
-  const storageClass = await createStorageClass(localKubeConfig);
+  const storageClass = await createStorageClass(homeAssistantNamespace);
   // Create persistent volume for the storage class
   const persistentVolume = await createPersistentVolume(homeAssistantNamespace.metadata.name,
                                                         storageClass.metadata.name,

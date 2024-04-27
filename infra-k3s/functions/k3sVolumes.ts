@@ -1,10 +1,10 @@
 import { Output } from "@pulumi/pulumi";
 import { remote, local } from "@pulumi/command";
-import { PersistentVolume } from "@pulumi/kubernetes/core/v1";
+import { PersistentVolume, Namespace } from "@pulumi/kubernetes/core/v1";
 import { StorageClass } from "@pulumi/kubernetes/storage/v1";
 
 // Async function to create a storage class in the cluster
-export async function createStorageClass(dependency?: remote.Command | local.Command): Promise<StorageClass> {
+export async function createStorageClass(dependency?: Namespace): Promise<StorageClass> {
   const createSc = new StorageClass("Apply ssd storage class", {
     metadata: {
       name: "sc-ssd-homepi-homeassistant"
