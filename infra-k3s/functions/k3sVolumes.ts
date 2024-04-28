@@ -1,4 +1,4 @@
-import { Output } from "@pulumi/pulumi";
+import { Output, getStack } from "@pulumi/pulumi";
 import { remote, local } from "@pulumi/command";
 import { PersistentVolume, Namespace } from "@pulumi/kubernetes/core/v1";
 import { StorageClass } from "@pulumi/kubernetes/storage/v1";
@@ -7,7 +7,11 @@ import { StorageClass } from "@pulumi/kubernetes/storage/v1";
 export async function createStorageClass(dependency?: Namespace): Promise<StorageClass> {
   const createSc = new StorageClass("Apply ssd storage class", {
     metadata: {
-      name: "sc-ssd-homepi-homeassistant"
+      name: `sc-ssd-homepi-homeassistant`,
+      labels: {
+        app: "home-assistant",
+        environment: getStack()
+      }
     },
     reclaimPolicy: "Retain",
     provisioner: "kubernetes.io/no-provisioner",
@@ -24,7 +28,11 @@ export async function createPersistentVolume (namespaceName: Output<string>, sto
   const createPv = new PersistentVolume("Apply persistent volume", {
     metadata: {
       name: "pv-ssd-homepi-homeassistant",
-      namespace: namespaceName
+      namespace: namespaceName,
+      labels: {
+        app: "home-assistant",
+        environment: getStack()
+      }
     },
     spec: {
       capacity: {

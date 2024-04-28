@@ -5,5 +5,6 @@ export interface iConnectionObj {
   host: string | pulumi.Output<any>,
   port: number,
   user: string | pulumi.Output<any>,
+  email: string | pulumi.Output<any>,
   privateKey: pulumi.Output<string>;
 }

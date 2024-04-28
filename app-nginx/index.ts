@@ -14,7 +14,7 @@ async function main() {
   const infraConfigObj = await getInfraStackConfig();
   // Set the path for the local chart
   const chartPath = "./../../helm-charts/charts/nginx-ingress";
-  // Deploy the home-assistant local chart
+  // Deploy the nginx-ingress-controller local chart
   // TODO: Update helm charts repo as environment-specific multi-repo
   const appChart = new Chart("nginx",{
     path: chartPath,

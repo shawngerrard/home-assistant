@@ -12,7 +12,8 @@ export async function getServerConnectionConfig() {
     host: config.require("serverIp"),
     port: 22,
     user: config.require("serverUser"),
-    privateKey: config.requireSecret("serverKey")
+    privateKey: config.requireSecret("serverKey"),
+    email: config.require("adminEmail")
   } as iConnectionObj : await getConnectionConfigFromStackOutput(config);
   // Return the config object
   return configObj;
@@ -33,7 +34,8 @@ async function getConnectionConfigFromStackOutput(config: pulumi.Config): Promis
     user: connectionConfig.apply(conn => {
       return conn.serverUser
     }),
-    privateKey: config.requireSecret("serverKey")
+    privateKey: config.requireSecret("serverKey"),
+    email: config.require("adminEmail")
   }
   // Return the connection configuration
   return connectionObj;

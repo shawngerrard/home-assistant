@@ -129,7 +129,8 @@ pulumi new typescript --name "infra-k3s" \
     --secret \
     --config="serverKey=$(cat /path/to/private/ssh/key)" \
     --config="serverIp=$(nmap -n -A <server hostname> -oG - | awk '/Up$/{print $2}')" \
-    --config="serverUser=<server username>"
+    --config="serverUser=<server username>" \
+    --config="adminEmail=<your email>" \
     --config="kubeConfigPath=~/path/to/kube/config"
 #+end_src
 
@@ -158,6 +159,7 @@ cd ~/documents/home-assistant/infra-k3s
 cat ~/path/to/ssh/private/key | pulumi config set --secret serverKey
 nmap -n -A <server hostname> -oG - | awk '/Up$/{print $2}' | pulumi config set serverIp
 pulumi config set serverUser <user name>
+pulumi config set adminEmail <email>
 pulumi config set kubeConfigPath ~/path/to/kube/config
 #+end_src
 

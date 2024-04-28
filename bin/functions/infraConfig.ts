@@ -10,6 +10,7 @@ export async function getInfraStackConfig() {
   // Create infra stack config object using either config or stack references
   const infraStackConfigObj = projectName.includes("infra-") ? {
     homeAssistantNamespace: config.require("homeAssistantNamespace"),
+    adminEmail: config.require("adminEmail"),
     kubeConfigPath: config.require("kubeConfigPath"),
     serverIp: config.require("serverIp"),
     storageClassName: config.require("serverVolumeStorageClass"),
@@ -29,6 +30,9 @@ async function getInfraStackConfigFromStackOutput(config: pulumi.Config): Promis
   const infraStackConfigObj: iInfraStackConfig = {
     homeAssistantNamespace: infraConfig.apply(config => {
       return config.homeAssistantNamespace
+    }),
+    adminEmail: infraConfig.apply(config => {
+      return config.adminEmail
     }),
     kubeConfigPath: infraConfig.apply(config => {
       return config.kubeConfigPath
