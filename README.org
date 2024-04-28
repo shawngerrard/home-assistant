@@ -306,11 +306,13 @@ http:
     - 10.42.0.0/16 # or we can use the IP to the nginx pod - 10.42.0.n
 #+end_src
 
-Save by pressing ~ESC~ and type ~:wq~ to save and exit the file. Try accessing ~dev.homeassistant.local~, however we may need to refresh the ~home-assistant~ pod with:
+Save by pressing ~ESC~ and type ~:wq~ to save and exit the file. We then need to refresh the ~home-assistant~ statefulset with:
 
 #+begin_src
-kubectl rollout restart -n home-assistant statefulset.apps/home-assistant
+kubectl rollout restart -n home-assistant-dev statefulset.apps/home-assistant
 #+end_src
+
+Try accessing ~dev.homeassistant.local~ - this local URL should now resolve.
 
 ** Pod destruction and restructure errors
 
