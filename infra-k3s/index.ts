@@ -38,7 +38,7 @@ async function main() {
     serverIp: connectionObj.host,
     serverPort: connectionObj.port,
     serverUser: connectionObj.user,
-    adminEmail: connectionObj.email,
+    adminEmail: connectionObj.adminEmail,
     serverVolumeStorageClass: persistentVolume.spec.storageClassName,
     serverVolumeMountPath: persistentVolume.spec.hostPath.path,
     homeAssistantNamespace: homeAssistantNamespace.metadata.name,
