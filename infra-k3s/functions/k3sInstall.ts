@@ -18,7 +18,10 @@ export async function installK3s (connectionObj: iConnectionObj): Promise<remote
 export async function copyKubeConfig (connectionObj: iConnectionObj, dependency?: remote.Command): Promise<remote.Command> {
   // Remote command to configure kubeconfig on the server
   const kubeConfigFile = new remote.Command("Copy kube configuration", {
-    create: "mkdir ~/.kube && mkdir ~/.kube/bin && sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config && sudo chown $(id -u):$(id -g) ~/.kube/config",
+    create: "mkdir ~/.kube \
+&& mkdir ~/.kube/bin \
+&& sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config \
+&& sudo chown $(id -u):$(id -g) ~/.kube/config",
     connection: connectionObj,
     delete: "rm -rf ~/.kube"
   }, {
@@ -28,10 +31,12 @@ export async function copyKubeConfig (connectionObj: iConnectionObj, dependency?
 }
 
 // Async function to set kubeconfig filepath in environment variables for cluster access
-export async function setKubeConfigFilepath (connectionObj: iConnectionObj, kubeConfigPath: Output<any>, dependency?: remote.Command): Promise<remote.Command> {
+export async function setKubeConfigFilepath (connectionObj: iConnectionObj, kubeConfigPath: Output<any>,
+                                             dependency?: remote.Command): Promise<remote.Command> {
   // Remote command to globally set a permanent environment variable on the server
   const kubeConfigEnv = new remote.Command("Set path in kubeconfig environment variable", {
-    create: kubeConfigPath.apply(kubePath => { return `echo KUBECONFIG=${kubePath} | sudo tee -a /etc/environment && . /etc/environment`}),
+    create: kubeConfigPath.apply(kubePath => { return `echo KUBECONFIG=${kubePath} | sudo tee -a /etc/environment \
+&& . /etc/environment`}),
     connection: connectionObj,
     delete: "sudo sed -i '/^KUBECONFIG/d' /etc/environment && unset KUBECONFIG"
   }, {
@@ -44,7 +49,9 @@ export async function setKubeConfigFilepath (connectionObj: iConnectionObj, kube
 export async function getLocalKubeConfig (connectionObj: iConnectionObj, dependency?: remote.Command): Promise<local.Command> {
   // Remote command to globally set a permanent environment variable on the server
   const localKubeConfig = new local.Command("Download kube config file", {
-    create: `mkdir -p ~/.kube && scp ${connectionObj.user}@${connectionObj.host}:/home/${connectionObj.user}/.kube/config ~/.kube && sed -i 's/server:.*$/server: https:\\/\\/${connectionObj.host}:6443/g' ~/.kube/config`,
+    create: `mkdir -p ~/.kube \
+&& scp ${connectionObj.user}@${connectionObj.host}:/home/${connectionObj.user}/.kube/config ~/.kube \
+&& sed -i 's/server:.*$/server: https:\\/\\/${connectionObj.host}:6443/g' ~/.kube/config`,
     delete: "rm -rf ~/.kube"
   }, {
     dependsOn: dependency

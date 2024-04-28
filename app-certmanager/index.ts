@@ -6,7 +6,7 @@
  * This will likely also need to be deployed prior to the "app-homeassistant" stack.
  *
 */
-
+import * as fs from "fs";
 import { Chart } from "@pulumi/kubernetes/helm/v3";
 import { Provider } from "@pulumi/kubernetes";
 import { getInfraStackConfig } from "../bin/functions/infraConfig";
@@ -16,7 +16,7 @@ async function main() {
   const infraConfigObj = await getInfraStackConfig();
   // Create a provider to interact with the kubernetes api server
   const provider = new Provider("k8s-provder", {
-    kubeconfig: ""
+    kubeconfig: fs.readFileSync(infraConfigObj.kubeConfigPath, "utf-8"),
   });
 
   // Set the path for the local chart
