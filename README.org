@@ -130,6 +130,7 @@ pulumi new typescript --name "infra-k3s" \
     --config="serverKey=$(cat /path/to/private/ssh/key)" \
     --config="serverIp=$(nmap -n -A <server hostname> -oG - | awk '/Up$/{print $2}')" \
     --config="serverUser=<server username>"
+    --config="kubeConfigPath=~/path/to/kube/config"
 #+end_src
 
 #+begin_quote
@@ -157,6 +158,7 @@ cd ~/documents/home-assistant/infra-k3s
 cat ~/path/to/ssh/private/key | pulumi config set --secret serverKey
 nmap -n -A <server hostname> -oG - | awk '/Up$/{print $2}' | pulumi config set serverIp
 pulumi config set serverUser <user name>
+pulumi config set kubeConfigPath ~/path/to/kube/config
 #+end_src
 
 Finally, for the projects to compile we must download the code package dependencies from ~npm~ referenced in the project's ~package.json~:

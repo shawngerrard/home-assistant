@@ -1,4 +1,4 @@
-import { getServerConnectionConfig } from "../bin/functions/connection";
+import { getServerConnectionConfig, getServerKubeConfigPath } from "../bin/functions/connection";
 import { createNamespace,
          copyKubeConfig,
          installK3s,
@@ -11,6 +11,8 @@ import { installHelm } from "./functions/helmInstall";
 async function main() {
   // Create connection object using the type interface
   const connectionObj = await getServerConnectionConfig();
+  // Obtain the kubeconfig path
+  const kubeConfigPath = await getServerKubeConfigPath();
   // Log config
   //console.log(config);
   // Install k3s on server
@@ -18,7 +20,7 @@ async function main() {
   // Configure cluster access on server
   const kubeConfig = await copyKubeConfig(connectionObj, installKube);
   // Create kubeconfig environment variable
-  const kubeEnvVar = await setKubeConfigFilepath(connectionObj, kubeConfig);
+  const kubeEnvVar = await setKubeConfigFilepath(connectionObj, kubeConfigPath, kubeConfig);
   // Configure local cluster access
   const localKubeConfig = await getLocalKubeConfig(connectionObj, kubeEnvVar);
   // Create a home-assistant namespace in the new cluster
@@ -38,7 +40,8 @@ async function main() {
     serverUser: connectionObj.user,
     serverVolumeStorageClass: persistentVolume.spec.storageClassName,
     serverVolumeMountPath: persistentVolume.spec.hostPath.path,
-    homeAssistantNamespace: homeAssistantNamespace.metadata.name
+    homeAssistantNamespace: homeAssistantNamespace.metadata.name,
+    kubeConfigPath: kubeConfigPath
   };
 }
 

@@ -8,11 +8,17 @@
 */
 
 import { Chart } from "@pulumi/kubernetes/helm/v3";
+import { Provider } from "@pulumi/kubernetes";
 import { getInfraStackConfig } from "../bin/functions/infraConfig";
 
 async function main() {
   // Obtain the infra-k3s config via stack references
   const infraConfigObj = await getInfraStackConfig();
+  // Create a provider to interact with the kubernetes api server
+  const provider = new Provider("k8s-provder", {
+    kubeconfig: ""
+  });
+
   // Set the path for the local chart
   const chartPath = "./../../helm-charts/charts/cert-manager";
   // Deploy the home-assistant local chart
