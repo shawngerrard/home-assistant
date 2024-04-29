@@ -7,9 +7,9 @@
  *
 */
 import * as fs from "fs";
-import { getStack } from "@pulumi/pulumi";
+import { getStack, output } from "@pulumi/pulumi";
 import { CustomResource } from "@pulumi/kubernetes/apiextensions";
-import { Chart } from "@pulumi/kubernetes/helm/v3";
+import { Release } from "@pulumi/kubernetes/helm/v3";
 import { Provider } from "@pulumi/kubernetes";
 import { getInfraStackConfig } from "../bin/functions/infraConfig";
 
@@ -18,16 +18,17 @@ async function main() {
   const infraConfigObj = await getInfraStackConfig();
   // Create a provider to interact with the kubernetes api server
   const provider = new Provider("k8s-provder", {
-    kubeconfig: fs.readFileSync(infraConfigObj.kubeConfigPath.toString(), "utf-8"),
+    kubeconfig: output(infraConfigObj.kubeConfigPath).apply(path => { return fs.readFileSync(path, "utf-8")}),
   });
   // Set the path for the local chart
   const chartPath = "./../../helm-charts/charts/cert-manager";
   // Deploy the cert-manager local chart
   // TODO: Update helm charts repo as environment-specific multi-repo
-  const appChart = new Chart("cert-manager",{
-    path: chartPath,
+  const appChart = new Release("cert-manager",{
+    chart: chartPath,
     // TODO: Update infra and deployment repo into environment-specific multi-repo
-    namespace: infraConfigObj.homeAssistantNamespace
+    namespace: infraConfigObj.homeAssistantNamespace,
+    version: "1.14.5" // make stack pulumi config
   },{
     provider: provider
   });
@@ -35,7 +36,7 @@ async function main() {
   const clusterIssuer = new CustomResource("letsencrypt-clusterissuer", {
     apiVersion: "cert-manager.io/v1",
     kind: "ClusterIssuer",
-    metaname: {
+    metadata: {
       name: "letsencrypt-prod",
       namespace: infraConfigObj.homeAssistantNamespace,
       labels: {
@@ -59,8 +60,10 @@ async function main() {
       }
     }
   },{
-    provider: provider
+    provider: provider,
+    dependsOn: appChart
   });
+  // Define a
   const certificate = new CustomResource("homeassistant-certificate", {
     apiVersion: "cert-manager.io/v1",
     kind: "Certificate",
@@ -84,7 +87,8 @@ async function main() {
       ],
     },
   }, {
-    provider: provider
+    provider: provider,
+    dependsOn: clusterIssuer
   });
   // Return any stack output
   return {

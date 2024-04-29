@@ -3,8 +3,6 @@
  *
  * Please ensure the "infra-k3s" stack is UP before deploying this stack.
 */
-
-import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
 import { getInfraStackConfig } from "../bin/functions/infraConfig";
 
@@ -16,7 +14,7 @@ async function main() {
   // Specify custom template settings for service in Helm values file
   // TODO: Update home-assistant helm chart values file to accept the following properties (rather than update here?)
   // TODO: Update NodePort to use either a LoadBalancer service or a ClusterIP service using an ingress resource
-  const customServiceValues = {
+  const customChartValues = {
     ingress: {
       enabled: true,
       className: "nginx",
@@ -44,10 +42,10 @@ async function main() {
     path: chartPath,
     // TODO: Update infra and deployment repo into environment-specific multi-repo
     namespace: infraConfigObj.homeAssistantNamespace,
-    values: customServiceValues
+    values: customChartValues
   });
   // Return the connection object for output (testing)
-  return customServiceValues;
+  return customChartValues;
 }
 // Export the custom values supplied to the helm chart
-export const customServiceValues = main();
+export const stackOutput = main();
