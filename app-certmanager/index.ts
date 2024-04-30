@@ -11,11 +11,14 @@ import { getStack, output } from "@pulumi/pulumi";
 import { CustomResource } from "@pulumi/kubernetes/apiextensions";
 import { Release } from "@pulumi/kubernetes/helm/v3";
 import { Provider } from "@pulumi/kubernetes";
-import { getInfraStackConfig } from "../bin/functions/infraConfig";
+import { getInfraStackConfig } from "../bin/functions/infraConfig"
+import { getCertManagerStackConfig } from "../bin/functions/certManagerConfig";
 
 async function main() {
   // Obtain the infra-k3s config via stack references
   const infraConfigObj = await getInfraStackConfig();
+  // Obtain the cert-manager config
+  const certManagerConfigObj = await getCertManagerStackConfig();
   // Create a provider to interact with the kubernetes api server
   const provider = new Provider("k8s-provder", {
     kubeconfig: output(infraConfigObj.kubeConfigPath).apply(path => { return fs.readFileSync(path, "utf-8")}),
@@ -28,7 +31,7 @@ async function main() {
     chart: chartPath,
     // TODO: Update infra and deployment repo into environment-specific multi-repo
     namespace: infraConfigObj.homeAssistantNamespace,
-    version: "1.14.5" // make stack pulumi config
+    version: certManagerConfigObj.version
   },{
     provider: provider
   });

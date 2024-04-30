@@ -10,7 +10,7 @@ export async function getServerConnectionConfig() {
   // Create connection object using either config or stack references
   const configObj = projectName.includes("infra-") ? {
     host: config.require("serverIp"),
-    port: 22,
+    port: pulumi.output(22),
     user: config.require("serverUser"),
     privateKey: config.requireSecret("serverKey")
   } as iConnectionObj : await getConnectionConfigFromStackOutput(config);
@@ -29,7 +29,9 @@ async function getConnectionConfigFromStackOutput(config: pulumi.Config): Promis
     host: connectionConfig.apply(conn => {
       return conn.serverIp
     }),
-    port: 22,
+    port: connectionConfig.apply(conn => {
+      return conn.port
+    }),
     user: connectionConfig.apply(conn => {
       return conn.serverUser
     }),
@@ -39,7 +41,7 @@ async function getConnectionConfigFromStackOutput(config: pulumi.Config): Promis
   return connectionObj;
 }
 
-// Function to abstract obtaining server kubeconfig path from stack config
+// (Deprecated) Function to abstract obtaining server kubeconfig path from stack config
 export async function getServerKubeConfigPath() {
   // Obtain the current project name
   const projectName:string = pulumi.getProject();
@@ -51,7 +53,7 @@ export async function getServerKubeConfigPath() {
   return configObj;
 }
 
-// Supporting function for abstraction of getting server stack references
+// (Deprecated) Supporting function for abstraction of getting server stack references
 async function getKubeConfigFromStackOutput(config: pulumi.Config): Promise<pulumi.Output<any>> {
   // Obtain references to the server stack
   const stackRef = new pulumi.StackReference(`${config.require("org")}/${config.require("serverProject")}/${pulumi.getStack()}`);
@@ -65,7 +67,7 @@ async function getKubeConfigFromStackOutput(config: pulumi.Config): Promise<pulu
   return kubeObj;
 }
 
-// Function to abstract obtaining admin email from stack config
+// (Deprecated) Function to abstract obtaining admin email from stack config
 export async function getAdminEmailConfig() {
   // Obtain the current project name
   const projectName:string = pulumi.getProject();
@@ -77,7 +79,7 @@ export async function getAdminEmailConfig() {
   return configObj;
 }
 
-// Supporting function for abstraction of getting server stack references
+// (Deprecated) Supporting function for abstraction of getting server stack references
 async function getAdminEmailFromStackOutput(config: pulumi.Config): Promise<pulumi.Output<any>> {
   // Obtain references to the server stack
   const stackRef = new pulumi.StackReference(`${config.require("org")}/${config.require("serverProject")}/${pulumi.getStack()}`);
