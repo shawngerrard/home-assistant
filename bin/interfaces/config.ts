@@ -17,5 +17,6 @@ export interface iStackConfig<T> {
 
 // Define an interface for the app-certmanager config
 export interface iCertManagerStackConfig {
-   version: string | pulumi.Output<any>
+  version: string | pulumi.Output<any>,
+  certManagerProject: string | pulumi.Output<any>
 }

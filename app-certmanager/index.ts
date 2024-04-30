@@ -95,9 +95,11 @@ async function main() {
   });
   // Return any stack output
   return {
+    version: certManagerConfigObj.version,
+    certManagerProject: certManagerConfigObj.certManagerProject,
     issuerName: clusterIssuer.metadata.name,
     certificateName: certificate.metadata.name
   }
 }
 // Export the custom values supplied to the helm chart
-export const stackOutput = main();
+export const certManagerStackOutput = main();

@@ -25,7 +25,7 @@ async function getInfraStackConfigFromStackOutput(config: pulumi.Config): Promis
   // Obtain references to the server stack
   const stackRef = new pulumi.StackReference(`${config.require("org")}/${config.require("serverProject")}/${pulumi.getStack()}`);
   // Obtain the stack output references
-  const infraConfig = stackRef.getOutput("infraConfig");
+  const infraConfig = stackRef.getOutput("infraStackOutput");
   // Set the infra stack config object
   const infraStackConfigObj: iInfraStackConfig = {
     homeAssistantNamespace: infraConfig.apply(config => {

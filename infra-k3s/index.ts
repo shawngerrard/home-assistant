@@ -46,4 +46,4 @@ async function main() {
 }
 
 // Call main async function
-export const infraConfig = main();
+export const infraStackOutput = main();
