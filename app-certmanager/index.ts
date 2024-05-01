@@ -7,38 +7,35 @@
  *
 */
 import * as fs from "fs";
-import { getStack, output } from "@pulumi/pulumi";
+import { Config, getProject, getStack, output } from "@pulumi/pulumi";
 import { CustomResource } from "@pulumi/kubernetes/apiextensions";
-import { Release } from "@pulumi/kubernetes/helm/v3";
 import { Provider } from "@pulumi/kubernetes";
 import { getInfraStackConfigFromStackOutput } from "../bin/functions/infraConfig"
 import { getCertManagerStackConfig } from "../bin/functions/certManagerConfig";
-import * as pulumi from "@pulumi/pulumi";
 import { CertManager } from "@pulumi/kubernetes-cert-manager";
 
 async function main() {
   // Obtain the stack configuration
-  const stackConfig = new pulumi.Config(pulumi.getProject());
+  const stackConfig = new Config(getProject());
   // Obtain the infra config via stack references
   const infraStackRefObj = await getInfraStackConfigFromStackOutput(stackConfig);
   // Obtain the cert-manager config
-  const certManagerConfigObj = await getCertManagerStackConfig(pulumi.getProject(), stackConfig);
+  const certManagerConfigObj = await getCertManagerStackConfig(getProject(), stackConfig);
   // Create a provider to interact with the kubernetes api server
   const provider = new Provider("k8s-provder", {
     kubeconfig: output(infraStackRefObj.kubeConfigPath).apply(path => { return fs.readFileSync(path, "utf-8")}),
+    namespace: infraStackRefObj.homeAssistantNamespace
   });
-
-
-  /*
-  // Set the path for the local chart
-  const chartPath = "./../../helm-charts/charts/cert-manager";
-  // Deploy the cert-manager local chart
-  // TODO: Update helm charts repo as environment-specific multi-repo
-  const appChart = new Release("cert-manager",{
-    chart: chartPath,
-    // TODO: Update infra and deployment repo into environment-specific multi-repo
-    namespace: infraStackRefObj.homeAssistantNamespace,
-    version: certManagerConfigObj.version
+  const certManager = new CertManager("cert-manager",{
+    helmOptions:{
+      namespace: infraStackRefObj.homeAssistantNamespace,
+      version: certManagerConfigObj.version
+    },
+    installCRDs: true,
+    podLabels: {
+      app: "home-assistant",
+      environment: getStack()
+    }
   },{
     provider: provider
   });
@@ -71,7 +68,7 @@ async function main() {
     }
   },{
     provider: provider,
-    dependsOn: appChart
+    dependsOn: certManager
   });
   // Define a certificate resource
   const certificate = new CustomResource("homeassistant-certificate", {
@@ -107,8 +104,6 @@ async function main() {
     issuerName: clusterIssuer.metadata.name,
     certificateName: certificate.metadata.name
   }
-  */
-  return {}
 }
 // Export the custom values supplied to the helm chart
 export const certManagerStackOutput = main();

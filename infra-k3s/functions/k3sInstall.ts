@@ -51,7 +51,8 @@ export async function getLocalKubeConfig (connectionObj: iConnectionObj, depende
   const localKubeConfig = new local.Command("Download kube config file", {
     create: `mkdir -p ~/.kube \
 && scp ${connectionObj.user}@${connectionObj.host}:/home/${connectionObj.user}/.kube/config ~/.kube \
-&& sed -i 's/server:.*$/server: https:\\/\\/${connectionObj.host}:6443/g' ~/.kube/config`,
+&& sed -i 's/server:.*$/server: https:\\/\\/${connectionObj.host}:6443/g' ~/.kube/config \
+&& sudo chown $(id -u):$(id -g) ~/.kube/config`,
     delete: "rm -rf ~/.kube"
   }, {
     dependsOn: dependency
