@@ -4,12 +4,12 @@
  * Please ensure the "infra-k3s" stack is UP before deploying this stack.
 */
 import * as k8s from "@pulumi/kubernetes";
-import * as pulumi from "@pulumi/pulumi";
+import { Config, getProject, getStack } from "@pulumi/pulumi";
 import { getInfraStackConfigFromStackOutput } from "../bin/functions/infraConfig";
 
 async function main() {
   // Obtain the stack config
-  const config = new pulumi.Config(pulumi.getProject());
+  const config = new Config(getProject());
   // Obtain the infra-k3s stack configuration
   const infraConfigObj = await getInfraStackConfigFromStackOutput(config);
   // Set the path for the local chart
@@ -37,6 +37,10 @@ async function main() {
       size: "500Gi",
       accessModes: ["ReadWriteOnce"],
       storageClass: infraConfigObj.storageClassName
+    },
+    podAnnotations: {
+      app: "home-assistant",
+      environment: getStack()
     }
   };
   // Deploy the home-assistant local chart
@@ -51,4 +55,4 @@ async function main() {
   return customChartValues;
 }
 // Export the custom values supplied to the helm chart
-export const stackOutput = main();
+export const homeAssistantStackOutput = main();

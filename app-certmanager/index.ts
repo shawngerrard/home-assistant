@@ -14,6 +14,7 @@ import { Provider } from "@pulumi/kubernetes";
 import { getInfraStackConfigFromStackOutput } from "../bin/functions/infraConfig"
 import { getCertManagerStackConfig } from "../bin/functions/certManagerConfig";
 import * as pulumi from "@pulumi/pulumi";
+import { CertManager } from "@pulumi/kubernetes-cert-manager";
 
 async function main() {
   // Obtain the stack configuration
@@ -26,6 +27,9 @@ async function main() {
   const provider = new Provider("k8s-provder", {
     kubeconfig: output(infraStackRefObj.kubeConfigPath).apply(path => { return fs.readFileSync(path, "utf-8")}),
   });
+
+
+  /*
   // Set the path for the local chart
   const chartPath = "./../../helm-charts/charts/cert-manager";
   // Deploy the cert-manager local chart
@@ -103,6 +107,8 @@ async function main() {
     issuerName: clusterIssuer.metadata.name,
     certificateName: certificate.metadata.name
   }
+  */
+  return {}
 }
 // Export the custom values supplied to the helm chart
 export const certManagerStackOutput = main();

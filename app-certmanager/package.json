@@ -1,11 +1,12 @@
 {
-    "name": "app-nginx",
+    "name": "app-certmanager",
     "main": "index.ts",
     "devDependencies": {
         "@types/node": "^18"
     },
     "dependencies": {
-        "@pulumi/pulumi": "^3.0.0",
-        "@pulumi/kubernetes": "^4.0.0"
+        "@pulumi/kubernetes": "^4.0.0",
+        "@pulumi/kubernetes-cert-manager": "^0.0.5",
+        "@pulumi/pulumi": "^3.0.0"
     }
 }
