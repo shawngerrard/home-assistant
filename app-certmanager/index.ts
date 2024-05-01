@@ -22,10 +22,9 @@ async function main() {
   const infraStackRefObj = await getInfraStackConfigFromStackOutput(stackConfig);
   // Obtain the cert-manager config
   const certManagerConfigObj = await getCertManagerStackConfig(pulumi.getProject(), stackConfig);
-  /*
   // Create a provider to interact with the kubernetes api server
   const provider = new Provider("k8s-provder", {
-    kubeconfig: output(infraConfigObj.kubeConfigPath).apply(path => { return fs.readFileSync(path, "utf-8")}),
+    kubeconfig: output(infraStackRefObj.kubeConfigPath).apply(path => { return fs.readFileSync(path, "utf-8")}),
   });
   // Set the path for the local chart
   const chartPath = "./../../helm-charts/charts/cert-manager";
@@ -34,7 +33,7 @@ async function main() {
   const appChart = new Release("cert-manager",{
     chart: chartPath,
     // TODO: Update infra and deployment repo into environment-specific multi-repo
-    namespace: infraConfigObj.homeAssistantNamespace,
+    namespace: infraStackRefObj.homeAssistantNamespace,
     version: certManagerConfigObj.version
   },{
     provider: provider
@@ -45,7 +44,7 @@ async function main() {
     kind: "ClusterIssuer",
     metadata: {
       name: "letsencrypt-prod",
-      namespace: infraConfigObj.homeAssistantNamespace,
+      namespace: infraStackRefObj.homeAssistantNamespace,
       labels: {
         environment: getStack()
       }
@@ -53,7 +52,7 @@ async function main() {
     spec: {
       acme: {
         server: "https://acme-v02.api.letsencrypt.org/directory",
-        email: infraConfigObj.adminEmail,
+        email: infraStackRefObj.adminEmail,
         privateKeySecretRef: {
           name: "letsencrypt-prod",
         },
@@ -70,7 +69,7 @@ async function main() {
     provider: provider,
     dependsOn: appChart
   });
-  // Define a
+  // Define a certificate resource
   const certificate = new CustomResource("homeassistant-certificate", {
     apiVersion: "cert-manager.io/v1",
     kind: "Certificate",
@@ -104,11 +103,6 @@ async function main() {
     issuerName: clusterIssuer.metadata.name,
     certificateName: certificate.metadata.name
   }
-  */
-  return {
-    infraStackRefObj,
-    certManagerConfigObj
-  };
 }
 // Export the custom values supplied to the helm chart
 export const certManagerStackOutput = main();
