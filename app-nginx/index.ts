@@ -7,11 +7,14 @@
  *
 */
 import { Chart } from "@pulumi/kubernetes/helm/v3";
-import { getInfraStackConfig } from "../bin/functions/infraConfig";
+import { getInfraStackConfigFromStackOutput } from "../bin/functions/infraConfig";
+import * as pulumi from "@pulumi/pulumi";
 
 async function main() {
+  // Obtain the stack config
+  const config = new pulumi.Config(pulumi.getProject());
   // Obtain the infra-k3s config via stack references
-  const infraConfigObj = await getInfraStackConfig();
+  const infraConfigObj = await getInfraStackConfigFromStackOutput(config);
   // Set the path for the local chart
   const chartPath = "./../../helm-charts/charts/nginx-ingress";
   // Deploy the nginx-ingress-controller local chart

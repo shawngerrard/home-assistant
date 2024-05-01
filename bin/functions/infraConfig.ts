@@ -2,28 +2,28 @@ import * as pulumi from "@pulumi/pulumi";
 import { iInfraStackConfig } from "../interfaces/config"
 
 // Function to obtain stack configuration
-export async function getInfraStackConfig() {
+export async function getInfraStackConfig(stackConfig: pulumi.Config) {
   // Obtain the current project name
-  const projectName:string = pulumi.getProject();
+  //const projectName:string = pulumi.getProject();
   // Obtain the stack configuration
-  const config = new pulumi.Config(projectName);
+  //const config = new pulumi.Config(projectName);
   // Create infra stack config object using either config or stack references
-  const stackConfigObj = projectName.includes("infra-k3s") ? {
-    homeAssistantNamespace: config.require("homeAssistantNamespace"),
-    adminEmail: config.require("adminEmail"),
-    kubeConfigPath: config.require("kubeConfigPath"),
-    serverIp: config.require("serverIp"),
-    storageClassName: config.require("serverVolumeStorageClass"),
-    persistentVolumeMountPath: config.require("serverVolumeMountPath")
-  } as iInfraStackConfig : await getInfraStackConfigFromStackOutput(config);
+  const stackConfigObj = {
+    homeAssistantNamespace: stackConfig.require("homeAssistantNamespace"),
+    adminEmail: stackConfig.require("adminEmail"),
+    kubeConfigPath: stackConfig.require("kubeConfigPath"),
+    serverIp: stackConfig.require("serverIp"),
+    storageClassName: stackConfig.require("serverVolumeStorageClass"),
+    persistentVolumeMountPath: stackConfig.require("serverVolumeMountPath")
+  } as iInfraStackConfig;
   // Return the infra stack configuration
   return stackConfigObj;
 }
 
 // Supporting function to obtain server stack references
-async function getInfraStackConfigFromStackOutput(config: pulumi.Config): Promise<iInfraStackConfig> {
+export async function getInfraStackConfigFromStackOutput(stackConfig: pulumi.Config): Promise<iInfraStackConfig> {
   // Obtain references to the server stack
-  const stackRef = new pulumi.StackReference(`${config.require("org")}/${config.require("serverProject")}/${pulumi.getStack()}`);
+  const stackRef = new pulumi.StackReference(`${stackConfig.require("org")}/${stackConfig.require("serverProject")}/${pulumi.getStack()}`);
   // Obtain the stack output references
   const infraConfig = stackRef.getOutput("infraStackOutput");
   // Set the infra stack config object

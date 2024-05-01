@@ -11,14 +11,18 @@ import { getStack, output } from "@pulumi/pulumi";
 import { CustomResource } from "@pulumi/kubernetes/apiextensions";
 import { Release } from "@pulumi/kubernetes/helm/v3";
 import { Provider } from "@pulumi/kubernetes";
-import { getInfraStackConfig } from "../bin/functions/infraConfig"
+import { getInfraStackConfigFromStackOutput } from "../bin/functions/infraConfig"
 import { getCertManagerStackConfig } from "../bin/functions/certManagerConfig";
+import * as pulumi from "@pulumi/pulumi";
 
 async function main() {
-  // Obtain the infra-k3s config via stack references
-  const infraConfigObj = await getInfraStackConfig();
+  // Obtain the stack configuration
+  const stackConfig = new pulumi.Config(pulumi.getProject());
+  // Obtain the infra config via stack references
+  const infraStackRefObj = await getInfraStackConfigFromStackOutput(stackConfig);
   // Obtain the cert-manager config
-  const certManagerConfigObj = await getCertManagerStackConfig();
+  const certManagerConfigObj = await getCertManagerStackConfig(pulumi.getProject(), stackConfig);
+  /*
   // Create a provider to interact with the kubernetes api server
   const provider = new Provider("k8s-provder", {
     kubeconfig: output(infraConfigObj.kubeConfigPath).apply(path => { return fs.readFileSync(path, "utf-8")}),
@@ -100,6 +104,11 @@ async function main() {
     issuerName: clusterIssuer.metadata.name,
     certificateName: certificate.metadata.name
   }
+  */
+  return {
+    infraStackRefObj,
+    certManagerConfigObj
+  };
 }
 // Export the custom values supplied to the helm chart
 export const certManagerStackOutput = main();

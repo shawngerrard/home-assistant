@@ -2,18 +2,18 @@ import * as pulumi from "@pulumi/pulumi";
 import { iCertManagerStackConfig } from "../interfaces/config"
 
 // Function to abstract obtaining cert-manager stack configuration
-export async function getCertManagerStackConfig() {
+export async function getCertManagerStackConfig(projectName: string, stackConfig: pulumi.Config) {
   // Obtain the current project name
-  const projectName:string = pulumi.getProject();
+  //const projectName:string = pulumi.getProject();
   // Obtain the stack configuration
-  const config = new pulumi.Config(projectName);
+  //const config = new pulumi.Config(projectName);
   // Create infra stack config object using either config or stack references
-  const infraStackConfigObj = projectName.includes("app-certmanager") ? {
-    version: config.require("version"),
-    certManagerProject: config.require("certManagerProject")
-  } as iCertManagerStackConfig : await getCertManagerStackConfigFromStackOutput(config);
+  const stackConfigObj = projectName.includes("app-certmanager") ? {
+    version: stackConfig.require("version"),
+    certManagerProject: stackConfig.require("certManagerProject")
+  } as iCertManagerStackConfig : await getCertManagerStackConfigFromStackOutput(stackConfig);
   // Return the cert-manager stack configuration
-  return infraStackConfigObj;
+  return stackConfigObj;
 }
 
 // Supporting function to aid abstraction of getting server stack references

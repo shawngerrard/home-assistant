@@ -4,11 +4,14 @@
  * Please ensure the "infra-k3s" stack is UP before deploying this stack.
 */
 import * as k8s from "@pulumi/kubernetes";
-import { getInfraStackConfig } from "../bin/functions/infraConfig";
+import * as pulumi from "@pulumi/pulumi";
+import { getInfraStackConfigFromStackOutput } from "../bin/functions/infraConfig";
 
 async function main() {
+  // Obtain the stack config
+  const config = new pulumi.Config(pulumi.getProject());
   // Obtain the infra-k3s stack configuration
-  const infraConfigObj = await getInfraStackConfig();
+  const infraConfigObj = await getInfraStackConfigFromStackOutput(config);
   // Set the path for the local chart
   const chartPath = "./../../helm-charts/charts/home-assistant";
   // Specify custom template settings for service in Helm values file

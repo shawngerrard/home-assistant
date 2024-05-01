@@ -8,12 +8,13 @@ import { createNamespace,
 import { createPersistentVolume, createStorageClass } from "./functions/k3sVolumes"
 import { installHelm } from "./functions/helmInstall";
 import * as pulumi from "@pulumi/pulumi";
+import { iConnectionObj } from "../bin/interfaces/connection";
 
 async function main() {
-  // Get pulumi stack config
+  // Create a config object
   const config = new pulumi.Config(pulumi.getProject());
   // Create connection object
-  const connectionObj = await getServerConnectionConfig();
+  const connectionObj: iConnectionObj = await getServerConnectionConfig(config);
   // Install k3s on server
   const installKube = await installK3s(connectionObj);
   // Configure cluster access on server
@@ -37,7 +38,7 @@ async function main() {
     serverIp: connectionObj.host,
     serverPort: connectionObj.port,
     serverUser: connectionObj.user,
-    adminEmail: config.require("adminEmail"),
+    adminEmail: new pulumi.Config("adminEmail"),
     serverVolumeStorageClass: persistentVolume.spec.storageClassName,
     serverVolumeMountPath: persistentVolume.spec.hostPath.path,
     homeAssistantNamespace: homeAssistantNamespace.metadata.name,

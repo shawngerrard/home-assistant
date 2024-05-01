@@ -2,24 +2,22 @@ import * as pulumi from "@pulumi/pulumi";
 import { iConnectionObj } from "../interfaces/connection";
 
 // Function to abstract obtaining server connection configuration from stack config
-export async function getServerConnectionConfig() {
-  // Obtain the current project name
-  const projectName:string = pulumi.getProject();
+export async function getServerConnectionConfig(config: pulumi.Config): Promise<iConnectionObj> {
   // Obtain the stack configuration
-  const config = new pulumi.Config(projectName);
+  //const config = new pulumi.Config(pulumi.getProject());
   // Create connection object using either config or stack references
-  const configObj = projectName.includes("infra-") ? {
+  const configObj = {
     host: config.require("serverIp"),
-    port: pulumi.output(22),
+    port: pulumi.output(22).apply(val => val),
     user: config.require("serverUser"),
     privateKey: config.requireSecret("serverKey")
-  } as iConnectionObj : await getConnectionConfigFromStackOutput(config);
+  } as iConnectionObj;
   // Return the config object
   return configObj;
 }
 
 // Supporting function for abstraction of getting server stack references
-async function getConnectionConfigFromStackOutput(config: pulumi.Config): Promise<iConnectionObj> {
+export async function getConnectionConfigFromStackOutput(config: pulumi.Config): Promise<iConnectionObj> {
   // Obtain references to the server stack
   const stackRef = new pulumi.StackReference(`${config.require("org")}/${config.require("serverProject")}/${pulumi.getStack()}`);
   // Obtain the stack output references
