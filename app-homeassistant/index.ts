@@ -30,7 +30,7 @@ async function main() {
       }]
     },
     service: {
-      port: 80
+      port: 443
     },
     persistence: {
       enabled: "true",

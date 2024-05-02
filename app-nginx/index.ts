@@ -20,6 +20,7 @@ async function main() {
   // Define custom values
   const customChartValues = {
     controller: {
+      enableCertManager: true,
       service: {
         extraLabels: {
           app: "home-assistant",

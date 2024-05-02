@@ -181,6 +181,50 @@ cd ~/documents/home-assistant/infra-k3s && pulumi up -y
 When the stack is up, you should have the ~kubeconfig~ file from the cluster present on your local system and configured to connect to your local server. You can view this with ~cat ~/.kube/config~.
 
 Once the ~infra-k3s~ stack is deployed, we can continue on with the rest of the deployments below.
+** Certificate manager deployment (cert-manager)
+
+This section will deploy the ~cert-manager~ to the ~k3s~ infrastructure defined in the _Infrastructure deployment_ section.
+
+#+begin_quote
+*Note*: Make sure you run the commands in this section in the correct sub-folder. I.E - ~cd [path/to]/home-assistant/app-certmanager~
+#+end_quote
+
+*** Configuration
+
+Once the ~infra-k3s~ stack is up, we're ready to deploy our ~app-certmanager~ certificate manager.
+
+Using the code repository we cloned earlier, we must select the ~myhome~ org and ~dev~ stack of our application deployment project ~app-certmanager~:
+
+#+begin_src bash
+cd ~/documents/home-assistant/app-certmanager && pulumi stack select myhome/dev
+#+end_src
+
+The code attempts to obtain stack references from the ~myhome/infra-k3s/dev~ stack. To enable Pulumi to achieve this, we need to populate the pulumi configuration file for ~app-certmanager~:
+
+#+begin_src bash
+cd ~/documents/home-assistant/app-certmanager
+pulumi config set certSecretName pulumi config set certSecretName homeassistant-$(pulumi stack --show-name)-tls
+pulumi config set org myhome
+pulumi config set serverProject infra-k3s
+pulumi config set version v1.14.5
+#+end_src
+
+Finally, for the projects to compile we must download the code package dependencies from ~npm~ referenced in the project's ~package.json~:
+
+#+begin_src bash
+cd ~/documents/home-assistant/app-certmanager && npm install
+#+end_src
+
+*** Deployment
+
+With the applications to deploy defined within the project (typically ~index.ts~), we can deploy our ~app-certmanager~ suite.
+
+We should be able to raise the Pulumi stack with:
+
+#+begin_src bash
+# Deploy the pulumi dev stack
+cd ~/documents/home-assistant/app-certmanager && pulumi up -y
+#+end_src
 
 ** Ingress controller deployment (nginx-ingress-controller)
 
@@ -190,9 +234,9 @@ This section will deploy the ~nginx-ingress-controller~ to the ~k3s~ infrastruct
 *Note*: Make sure you run the commands in this section in the correct sub-folder. I.E - ~cd [path/to]/home-assistant/app-nginx~
 #+end_quote
 
-*** Scaffold and configuration
+*** Configuration
 
-Once the ~infra-k3s~ stack is up, we're ready to deploy our ~app-nginx~ ingress controller.
+Once the ~app-certmanager~ stack is up, we're ready to deploy our ~app-nginx~ ingress controller.
 
 Using the code repository we cloned from Github in the _Infrastructure deployment_ section, we must select the ~myhome~ org and ~dev~ stack of our application deployment project ~app-nginx~:
 
@@ -233,9 +277,9 @@ This section will deploy the ~home-assistant~ application to the ~k3s~ infrastru
 *Note*: Make sure you run the commands in this section in the correct sub-folder. I.E - ~cd [path/to]/home-assistant/app-homeassistant~
 #+end_quote
 
-*** Scaffold and configuration
+*** Configuration
 
-Once the ~infra-k3s~ stack is up, we're ready to deploy our ~app-homeassistant~ application.
+Once the ~app-nginx~ stack is up, we're ready to deploy our ~app-homeassistant~ application.
 
 Using the code repository we cloned from Github in the _Infrastructure deployment_ section, we must select the ~myhome~ org and ~dev~ stack of our application deployment project ~app-homeassistant~:
 

@@ -35,6 +35,10 @@ async function main() {
     podLabels: {
       app: "home-assistant",
       environment: getStack()
+    },
+    serviceLabels: {
+      app: "home-assistant",
+      environment: getStack()
     }
   },{
     provider: provider
@@ -99,10 +103,10 @@ async function main() {
   });
   // Return any stack output
   return {
-    version: certManagerConfigObj.version,
     certManagerProject: certManagerConfigObj.certManagerProject,
+    certificateName: certificate.metadata.name,
     issuerName: clusterIssuer.metadata.name,
-    certificateName: certificate.metadata.name
+    version: certManagerConfigObj.version
   }
 }
 // Export the custom values supplied to the helm chart
