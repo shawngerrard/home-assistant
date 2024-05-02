@@ -181,6 +181,7 @@ cd ~/documents/home-assistant/infra-k3s && pulumi up -y
 When the stack is up, you should have the ~kubeconfig~ file from the cluster present on your local system and configured to connect to your local server. You can view this with ~cat ~/.kube/config~.
 
 Once the ~infra-k3s~ stack is deployed, we can continue on with the rest of the deployments below.
+
 ** Certificate manager deployment (cert-manager)
 
 This section will deploy the ~cert-manager~ to the ~k3s~ infrastructure defined in the _Infrastructure deployment_ section.
@@ -248,6 +249,7 @@ The code attempts to obtain stack references from the ~myhome/infra-k3s/dev~ sta
 
 #+begin_src bash
 cd ~/documents/home-assistant/app-nginx
+pulumi config set certProject app-certmanager
 pulumi config set org $(pulumi org get-default)
 pulumi config set serverProject infra-k3s
 #+end_src
