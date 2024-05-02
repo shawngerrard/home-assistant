@@ -20,7 +20,7 @@ async function main() {
   // Obtain the infra config via stack references
   const infraStackRefObj = await getInfraStackConfigFromStackOutput(stackConfig);
   // Obtain the cert-manager config
-  const certManagerConfigObj = await getCertManagerStackConfig(getProject(), stackConfig);
+  const certManagerConfigObj = await getCertManagerStackConfig(stackConfig);
   // Create a provider to interact with the kubernetes api server
   const provider = new Provider("k8s-provder", {
     kubeconfig: output(infraStackRefObj.kubeConfigPath).apply(path => { return fs.readFileSync(path, "utf-8")}),
@@ -86,7 +86,7 @@ async function main() {
       }
     },
     spec: {
-      secretName: `homeassistant-${getStack()}-tls`,
+      secretName: certManagerConfigObj.certSecretName,
       issuerRef: {
         name: "letsencrypt-prod",
         kind: "ClusterIssuer",
@@ -103,9 +103,9 @@ async function main() {
   });
   // Return any stack output
   return {
-    certManagerProject: certManagerConfigObj.certManagerProject,
-    certificateName: certificate.metadata.name,
-    issuerName: clusterIssuer.metadata.name,
+    certSecretName: certManagerConfigObj.certSecretName,
+    org: certManagerConfigObj.org,
+    serverProject: certManagerConfigObj.serverProject,
     version: certManagerConfigObj.version
   }
 }

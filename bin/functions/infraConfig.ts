@@ -1,50 +1,50 @@
-import * as pulumi from "@pulumi/pulumi";
+import { Config, getStack, StackReference } from "@pulumi/pulumi";
 import { iInfraStackConfig } from "../interfaces/config"
 
 // Function to obtain stack configuration
-export async function getInfraStackConfig(stackConfig: pulumi.Config) {
+export async function getInfraStackConfig(stackConfig: Config) {
   // Obtain the current project name
   //const projectName:string = pulumi.getProject();
   // Obtain the stack configuration
   //const config = new pulumi.Config(projectName);
   // Create infra stack config object using either config or stack references
-  const stackConfigObj = {
+  const stackConfigObj: iInfraStackConfig = {
     homeAssistantNamespace: stackConfig.require("homeAssistantNamespace"),
     adminEmail: stackConfig.require("adminEmail"),
     kubeConfigPath: stackConfig.require("kubeConfigPath"),
     serverIp: stackConfig.require("serverIp"),
     storageClassName: stackConfig.require("serverVolumeStorageClass"),
     persistentVolumeMountPath: stackConfig.require("serverVolumeMountPath")
-  } as iInfraStackConfig;
+  };
   // Return the infra stack configuration
   return stackConfigObj;
 }
 
 // Supporting function to obtain server stack references
-export async function getInfraStackConfigFromStackOutput(stackConfig: pulumi.Config): Promise<iInfraStackConfig> {
+export async function getInfraStackConfigFromStackOutput(stackConfig: Config): Promise<iInfraStackConfig> {
   // Obtain references to the server stack
-  const stackRef = new pulumi.StackReference(`${stackConfig.require("org")}/${stackConfig.require("serverProject")}/${pulumi.getStack()}`);
+  const stackRef = new StackReference(`${stackConfig.require("org")}/${stackConfig.require("serverProject")}/${getStack()}`);
   // Obtain the stack output references
   const infraConfig = stackRef.getOutput("infraStackOutput");
   // Set the infra stack config object
   const infraStackConfigObj: iInfraStackConfig = {
-    homeAssistantNamespace: infraConfig.apply(config => {
-      return config.homeAssistantNamespace
+    homeAssistantNamespace: infraConfig.apply(ref => {
+      return ref.homeAssistantNamespace
     }),
-    adminEmail: infraConfig.apply(config => {
-      return config.adminEmail
+    adminEmail: infraConfig.apply(ref => {
+      return ref.adminEmail
     }),
-    kubeConfigPath: infraConfig.apply(config => {
-      return config.kubeConfigPath
+    kubeConfigPath: infraConfig.apply(ref => {
+      return ref.kubeConfigPath
     }),
-    serverIp: infraConfig.apply(config => {
-      return config.serverIp
+    serverIp: infraConfig.apply(ref => {
+      return ref.serverIp
     }),
-    storageClassName: infraConfig.apply(config => {
-      return config.serverVolumeStorageClass
+    storageClassName: infraConfig.apply(ref => {
+      return ref.serverVolumeStorageClass
     }),
-    persistentVolumeMountPath: infraConfig.apply(config => {
-      return config.serverVolumeMountPath
+    persistentVolumeMountPath: infraConfig.apply(ref => {
+      return ref.serverVolumeMountPath
     })
   }
   // Return the connection configuration
