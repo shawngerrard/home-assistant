@@ -27,6 +27,10 @@ async function main() {
           path: "/",
           pathType: "Prefix"
         }],
+      }],
+      tls: [{
+        secretName: "tls-secret",
+        hosts: ["homeassistant.local","dev.homeassistant.local"]
       }]
     },
     service: {

@@ -25,7 +25,8 @@ async function main() {
   const customChartValues = {
     controller: {
       defaultTLS: {
-        secret: pulumi.interpolate `${infraConfigObj.homeAssistantNamespace}/${certManagerConfigObj.certSecretName}`
+        //secret: pulumi.interpolate `${infraConfigObj.homeAssistantNamespace}/${certManagerConfigObj.certSecretName}`
+        secret: "home-assistant-dev/tls-secret"
       },
       enableCertManager: true,
       pod: {

@@ -13,7 +13,8 @@ import { Provider } from "@pulumi/kubernetes";
 import { getInfraStackConfigFromStackOutput } from "../bin/functions/infraConfig"
 import { getCertManagerStackConfig } from "../bin/functions/certManagerConfig";
 import { CertManager } from "@pulumi/kubernetes-cert-manager";
-
+import * as k8s from "@pulumi/kubernetes";
+import * as pulumi from "@pulumi/pulumi";
 async function main() {
   // Obtain the stack configuration
   const stackConfig = new Config(getProject());
@@ -43,6 +44,58 @@ async function main() {
   },{
     provider: provider
   });
+
+  /* --------------------------------------------------------- */
+  // Read the contents of the certificate and private key files
+  const certificateContent = fs.readFileSync("cert.pem", "utf8");
+  const privateKeyContent = fs.readFileSync("key.pem", "utf8");
+  // Encode the contents as base64 strings
+  const certificateBase64 = Buffer.from(certificateContent).toString("base64");
+  const privateKeyBase64 = Buffer.from(privateKeyContent).toString("base64");
+  // Define the self-signed certificate
+  const tlsSecret = new k8s.core.v1.Secret("tls-secret", {
+    metadata: {
+      name: "tls-secret",
+      namespace: infraStackRefObj.homeAssistantNamespace
+    },
+    type: "kubernetes.io/tls",
+    data: {
+      "tls.crt": certificateBase64,  // Base64-encoded certificate content
+      "tls.key": privateKeyBase64
+    },
+  }, {dependsOn: certManager});
+  // Define ClusterIssuer using self-signed certificate
+  const clusterIssuer = new CustomResource("selfsigned-issuer", {
+    apiVersion: "cert-manager.io/v1",
+    kind: "ClusterIssuer",
+    metadata: {
+      name: "selfsigned-issuer",
+      namespace: infraStackRefObj.homeAssistantNamespace,
+    },
+    spec: {
+      selfSigned: {},
+    },
+  }, {dependsOn: tlsSecret});
+
+  // Define Certificate resource using the ClusterIssuer
+  const certificate = new CustomResource("example-tls", {
+    apiVersion: "cert-manager.io/v1",
+    kind: "Certificate",
+    metadata: {
+      name: "selfsigned-tls",
+    },
+    spec: {
+      secretName: "tls-secret",
+      commonName: "homeassistant.local",
+      dnsNames: ["homeassistant.local","dev.homeassistant.local"],
+      isCA: true,
+      issuerRef: {
+        name: clusterIssuer.metadata.name,
+      },
+    },
+  });
+  /* --------------------------------------------------------- */
+  /*
   // Define a cluster cert authority issuer
   const clusterIssuer = new CustomResource("letsencrypt-clusterissuer", {
     apiVersion: "cert-manager.io/v1",
@@ -101,6 +154,8 @@ async function main() {
     provider: provider,
     dependsOn: clusterIssuer
   });
+  */
+
   // Return any stack output
   return {
     certSecretName: certManagerConfigObj.certSecretName,
