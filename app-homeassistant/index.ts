@@ -15,10 +15,13 @@ async function main() {
   // Set the path for the local chart
   const chartPath = "./../../helm-charts/charts/home-assistant";
   // Specify custom template settings for service in Helm values file
-  // TODO: Update home-assistant helm chart values file to accept the following properties (rather than update here?)
-  // TODO: Update NodePort to use either a LoadBalancer service or a ClusterIP service using an ingress resource
   const customChartValues = {
     ingress: {
+      annotations: {
+        "nginx.ingress.kubernetes.io/limit-rps": "5", // limit request per seconds multiplied by default burst-multiplier (5)
+        "nginx.ingress.kubernetes.io/limit-connections": "1", // limit per ip
+        "nginx.ingress.kubernetes.io/proxy-body-size": "30M", // limit request proxy body site to 30 megabytes
+      },
       enabled: true,
       className: "nginx",
       hosts: [{
