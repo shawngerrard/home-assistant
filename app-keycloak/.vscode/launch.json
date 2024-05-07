@@ -1,0 +1,17 @@
+{
+  "version": "0.1.0",
+  "configurations": [
+    {
+      "name": "TS Pulumi app-keycloak index.ts",
+      "type": "node",
+      "request": "launch",
+      "args": ["${workspaceFolder}/index.ts"],
+      "runtimeArgs": ["--nolazy","-r","ts-node/register"],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "buildjs",
+      "dap-compilation": "npm run build",
+      "outFiles": ["${workspaceFolder}/dist/*.js"],
+      "protocol": "inspector"
+     }
+  ]
+}

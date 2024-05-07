@@ -1,0 +1,13 @@
+{
+    "version": "0.1.0",
+    "tasks": [
+        {
+            "label": "buildjs",
+            "taskname":"build app",
+            "type": "shell",
+            "command": "tsc",
+            "args": ["-p", "${workspaceFolder}"],
+            "group": "debug"
+        }
+    ]
+}
