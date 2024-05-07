@@ -10,7 +10,6 @@ import { Chart } from "@pulumi/kubernetes/helm/v3";
 import { getInfraStackConfigFromStackOutput } from "../bin/functions/infraConfig";
 import { getCertManagerStackConfigFromStackOutput } from "../bin/functions/certManagerConfig"
 import { Config, getProject, getStack } from "@pulumi/pulumi";
-import * as pulumi from "@pulumi/pulumi";
 
 async function main() {
   // Obtain the stack config
@@ -20,7 +19,7 @@ async function main() {
   // Obtain the app-certmanager stack output references
   const certManagerConfigObj = await getCertManagerStackConfigFromStackOutput(config);
   // Set the path for the local chart
-  const chartPath = "./../../helm-charts/charts/nginx-ingress";
+  const chartPath = "./../../helm-charts/charts/keycloak";
   // Define custom values
   const customChartValues = {
     controller: {
