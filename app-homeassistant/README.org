@@ -66,15 +66,15 @@ cd ~/documents/home-assistant/app-homeassistant && pulumi up -y
 #+end_quote
 
 #+begin_quote
-*Note*: We could use a ConfigMap to perform the following steps, however this _may_ make data volume snapshots more difficult to achieve. There's an [[https://github.com/pajikos/home-assistant-helm-chart/issues/30][open issue on Github]] relating to this and our next steps. There's a fix PR awaiting merging, so this should be fixed shortly.
+*Note*: We could use a ConfigMap to perform the following steps, however this _may_ make data volume snapshots more difficult to achieve. There's an [[https://github.com/pajikos/home-assistant-helm-chart/issues/30][open issue on Github]] relating to this and our next steps. There's a fix PR awaiting merging, so this should be modifiable from the ~values.yaml~ file in the future.
 
-Current work-around is to update the ~configuration.yaml~ file in the ~home-assistant~ container. We can access the container using the following:
+In the meantime, we can update the ~configuration.yaml~ file in the ~home-assistant~ container. We can access the container using the following:
 
 #+begin_src bash
 kubectl exec -it -n <home-assistant namespace> <home-assistant pod name> -- bash
 #+end_src
 
-Open the file using ~vi~:
+Open the ~configuration.yaml~ file using ~vi~:
 
 #+begin_src bash
 vi /config/configuration.yaml
@@ -89,9 +89,13 @@ http:
     - 10.42.0.0/16  # Subnet mask for the reverse proxy
 #+end_src
 
-Restart the pod with the following command:
+Restart the pod with either of the following commands (option 1 recommended as this reduces pod downtime):
 
 #+begin_src bash
+# Option 1 (recommended) - refresh the statefulset with a rolling restart to the home-assistant pod
+kubectl rollout restart -n home-assistant-dev statefulset.apps/home-assistant
+
+# Option 2 - force the pod to terminate and restart
 kubectl get pod <home-assistant pod name> -n <home-assistant namespace> -o yaml | kubectl replace --force -f -
 #+end_src
 
@@ -102,28 +106,7 @@ watch -n 2 'kubectl get pods -n <home-assistant namespace>'
 #+end_src
 #+end_quote
 
-To configure ~home-assistant~, we must first access the pod:
-
-#+begin_src bash
-kubectl exec -it $(kubectl get pod -l app.kubernetes.io/name=home-assistant -n home-assistant-dev -o jsonpath="{.items[0].metadata.name}") -n home-assistant-dev -- bash
-#+end_src
-
-Then, we need to edit the ~configuration.yaml~ by using the ~vi /config/configuration.yaml~ command. We then add the following at the bottom of the file:
-
-#+begin_src
-http:
-  use_x_forwarded_for: true
-  trusted_proxies:
-    - 10.42.0.0/16 # or we can use the IP to the nginx pod - 10.42.0.n
-#+end_src
-
-Save by pressing ~ESC~ and type ~:wq~ to save and exit the file. We then need to refresh the ~home-assistant~ statefulset with:
-
-#+begin_src
-kubectl rollout restart -n home-assistant-dev statefulset.apps/home-assistant
-#+end_src
-
-Try accessing ~dev.homeassistant.local~ - this local URL should now resolve.
+Try accessing ~https://dev.homeassistant.local~ - this local URL should now resolve.
 
 * Pod destruction and restructure errors
 
