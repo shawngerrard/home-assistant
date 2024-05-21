@@ -82,7 +82,7 @@ vi /config/configuration.yaml
 
 Enter the following configuration into the file (as per [[https://www.home-assistant.io/integrations/http/][the home-assistant spec]]) and save by pressing ~ESC :wq ENTER~:
 
-#+begin_src yaml
+#+begin_src
 http:
   use_x_forwarded_for: true
   trusted_proxies:
