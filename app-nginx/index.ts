@@ -8,26 +8,23 @@
 */
 import { Chart } from "@pulumi/kubernetes/helm/v3";
 import { getInfraStackConfigFromStackOutput } from "../bin/functions/infraConfig";
-import { getCertManagerStackConfigFromStackOutput } from "../bin/functions/certManagerConfig"
-import { Config, getProject, getStack } from "@pulumi/pulumi";
-import * as pulumi from "@pulumi/pulumi";
+import { Config, getProject, getStack, output } from "@pulumi/pulumi";
+import { Provider } from "@pulumi/kubernetes";
 
 async function main() {
   // Obtain the stack config
   const config = new Config(getProject());
   // Obtain the infra-k3s stack output references
   const infraConfigObj = await getInfraStackConfigFromStackOutput(config);
-  // Obtain the app-certmanager stack output references
-  const certManagerConfigObj = await getCertManagerStackConfigFromStackOutput(config);
+  // Define a kubernetes provider for the cluster
+  const provider = new Provider("provider", {
+    kubeconfig: output(infraConfigObj.kubeConfigPath).apply(path => path)
+  });
   // Set the path for the local chart
   const chartPath = "./../../helm-charts/charts/nginx-ingress";
   // Define custom values
   const customChartValues = {
     controller: {
-      defaultTLS: {
-        //secret: pulumi.interpolate `${infraConfigObj.homeAssistantNamespace}/${certManagerConfigObj.certSecretName}`
-        secret: "home-assistant-dev/tls-secret"
-      },
       enableCertManager: true,
       pod: {
         extraLabels: {
@@ -53,9 +50,11 @@ async function main() {
     // TODO: Update infra and deployment repo into environment-specific multi-repo
     namespace: infraConfigObj.homeAssistantNamespace,
     values: customChartValues
-  },{});
-  // Return the connection object for output (testing)
-  return "";
+  },{
+    provider
+  });
+  // Return any output
+  return ""
 }
 // Export the custom values supplied to the helm chart
 export const nginxStackOutput = main();

@@ -1,0 +1,81 @@
+* Infrastructure deployment (k3s/helm)
+
+This section will deploy ~k3s~ infrastructure to a ~raspberry-pi~ using Pulumi.
+
+#+begin_quote
+*Note*: Make sure you run all commands in this section in the correct sub-folder. I.E - ~cd [path/to]/home-assistant/infra-k3s~
+#+end_quote
+
+** Scaffold and configuration
+
+We must first create and configure the ~typescript~ pulumi project that will be used to install our infrastructure applications (E.G - ~k3s~, ~helm~, etc).
+
+*** New project
+
+#+begin_quote
+*Note*: If using my github code repository for these deployments, you can ignore this section and follow the next section _Existing project_.
+#+end_quote
+
+First, we need to create a stack to manage our infrastructure.
+
+We can create and configure our stack by passing in the ~--config~ parameter to the ~pulumi new~ command, as follows:
+
+#+begin_src bash
+# Create the pulumi project and pass in configuration key/value pairs
+pulumi new typescript --name "infra-k3s" \
+    --stack "dev" \
+    --secret \
+    --config="serverKey=$(cat /path/to/private/ssh/key)" \
+    --config="serverIp=$(nmap -n -A <server hostname> -oG - | awk '/Up$/{print $2}')" \
+    --config="serverUser=<server username>" \
+    --config="adminEmail=<your email>" \
+    --config="kubeConfigPath=~/path/to/kube/config"
+#+end_src
+
+#+begin_quote
+*Note*: This will create a new typescript pulumi project named ~infra-k3s~, a stack named ~dev~, and a configuration file (~Pulumi.dev.yaml~) containing the server SSH key for remote connection as well as the IP address (obtained from ~nmap~) of the server and user account logging in.
+#+end_quote
+
+*** Existing project
+
+First, we must clone our project from the repository:
+
+#+begin_src bash
+git clone git@github.com:shawngerrard/home-assistant.git ~/documents/
+#+end_src
+
+Then, we must select the ~dev~ stack of our infrastructure project ~infra-k3s~:
+
+#+begin_src bash
+cd ~/documents/home-assistant/infra-k3s && pulumi stack select myhome/dev
+#+end_src
+
+And also populate the pulumi configuration file for ~infra-k3s~:
+
+#+begin_src bash
+cd ~/documents/home-assistant/infra-k3s
+cat ~/path/to/ssh/private/key | pulumi config set --secret serverKey
+nmap -n -A <server hostname> -oG - | awk '/Up$/{print $2}' | pulumi config set serverIp
+pulumi config set serverUser <user name>
+pulumi config set adminEmail <email>
+pulumi config set kubeConfigPath ~/path/to/kube/config
+#+end_src
+
+Finally, for the projects to compile we must download the code package dependencies from ~npm~ referenced in the project's ~package.json~:
+
+#+begin_src bash
+cd ~/documents/home-assistant/infra-k3s && npm install
+#+end_src
+
+** Deployment
+
+With the infrastructure to deploy defined within the project (typically ~index.ts~), we can deploy our ~infra-k3s~ suite.
+
+#+begin_src bash
+# Deploy the pulumi infra-k3s dev stack
+cd ~/documents/home-assistant/infra-k3s && pulumi up -y
+#+end_src
+
+When the stack is up, you should have the ~kubeconfig~ file from the cluster present on your local system and configured to connect to your local server. You can view this with ~cat ~/.kube/config~.
+
+Once the ~infra-k3s~ stack is deployed, we can continue on with the rest of the deployments.
