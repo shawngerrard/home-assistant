@@ -1,0 +1,44 @@
+* Ingress controller deployment (nginx-ingress-controller)
+
+This section will deploy the ~nginx-ingress-controller~ to the ~k3s~ infrastructure defined in the _Infrastructure deployment_ section.
+
+#+begin_quote
+*Note*: Make sure you run the commands in this section in the correct sub-folder. I.E - ~cd [path/to]/home-assistant/app-nginx~
+#+end_quote
+
+** Configuration
+
+Once the [[../infra-k3s/README.org][infra-k3s]] stack is up, we're ready to deploy our ~app-nginx~ ingress controller.
+
+Using the code repository we cloned from Github in the _Infrastructure deployment_ section, we must select the ~myhome~ org and ~dev~ stack of our application deployment project ~app-nginx~:
+
+#+begin_src bash
+cd ~/documents/home-assistant/app-nginx && pulumi stack select myhome/dev
+#+end_src
+
+The code attempts to obtain stack references from the ~myhome/infra-k3s/dev~ stack. To enable Pulumi to achieve this, we need to populate the pulumi configuration file for ~app-nginx~:
+
+#+begin_src bash
+cd ~/documents/home-assistant/app-nginx
+pulumi config set org $(pulumi org get-default)
+pulumi config set serverProject infra-k3s
+#+end_src
+
+Finally, for the projects to compile we must download the code package dependencies from ~npm~ referenced in the project's ~package.json~:
+
+#+begin_src bash
+cd ~/documents/home-assistant/app-nginx && npm install
+#+end_src
+
+** Deployment
+
+With the applications to deploy defined within the project (typically ~index.ts~), we can deploy our ~app-nginx~ suite.
+
+Now we should be able to raise the Pulumi stack:
+
+#+begin_src bash
+# Deploy the pulumi dev stack
+cd ~/documents/home-assistant/app-nginx && pulumi up -y
+#+end_src
+
+Once this stack is deployed, we're ready to deploy the [[../app-certmanager/README.org][app-certmanager]] stack.

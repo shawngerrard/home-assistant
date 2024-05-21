@@ -78,4 +78,4 @@ cd ~/documents/home-assistant/infra-k3s && pulumi up -y
 
 When the stack is up, you should have the ~kubeconfig~ file from the cluster present on your local system and configured to connect to your local server. You can view this with ~cat ~/.kube/config~.
 
-Once the ~infra-k3s~ stack is deployed, we can continue on with the rest of the deployments.
+Once the ~infra-k3s~ stack is deployed, we're ready to deploy the [[../app-nginx/README.org][app-nginx]] stack.
