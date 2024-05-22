@@ -37,22 +37,42 @@ cd ~/documents/home-assistant/app-certmanager && npm install
 
 For local network testing purposes, we can generate a self-signed certificate with the following commands:
 
- - Create a private key
+ - Create a configuration file and save it as ~req.conf~:
+
+   #+begin_src plaintext
+[req]
+default_bits = 2048
+prompt = no
+default_md = sha256
+distinguished_name = dn
+
+[dn]
+CN = <host name>
+
+[req_ext]
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = <host name>
+DNS.2 = <sub-domain hosts>
+   #+end_src
+
+ - Create a private key file:
 
 #+begin_src bash
 openssl genrsa -out key.pem 2048
 #+end_src
 
- - Create a Certificate Signing Request (CSR)
+ - Create a Certificate Signing Request (CSR):
 
 #+begin_src bash
-openssl req -new -key key.pem -out csr.pem
+openssl req -new -key key.pem -out csr.pem -config req.conf
 #+end_src
 
  - Create a self-signed certificate with a Common Name (CN)
 
 #+begin_src bash
-openssl req -x509 -sha256 -days 365 -key key.pem -in csr.pem -out cert.pem -subj "/CN=<host name>"
+openssl x509 -req -in csr.pem -signkey key.pem -out cert.pem -days 365 -sha256 -extfile req.conf -extensions req_ext
 #+end_src
 
 ** Deployment
