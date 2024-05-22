@@ -46,6 +46,8 @@ async function main() {
   });
 
   /* --------------------------------------------------------- */
+  /* -------- Temp code using self-signed certificate -------- */
+  /* --------------------------------------------------------- */
   // Read the contents of the certificate and private key files
   const certificateContent = fs.readFileSync("cert.pem", "utf8");
   const privateKeyContent = fs.readFileSync("key.pem", "utf8");

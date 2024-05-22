@@ -18,7 +18,7 @@ async function main() {
     kubeconfig: output(infraConfigObj.kubeConfigPath).apply(path => path)
   });
   // Obtain the nginx-ingress service
-  const nginxIngressService = k8s.core.v1.Service.get("nginx-nginx-ingress-controller", "home-assistant-dev/nginx-nginx-ingress-controller", { provider });
+  const nginxIngressService = k8s.core.v1.Service.get("nginx-ingress-nginx-controller", "home-assistant-dev/nginx-ingress-nginx-controller", { provider });
   // Get the list of endpoint ip's for the service
   const endpointList = all([nginxIngressService.metadata.name, concat(nginxIngressService.metadata.namespace, "/", nginxIngressService.metadata.name)]).apply(([name, namespace]) =>
     k8s.core.v1.Endpoints.get(name, namespace, { provider }));
@@ -43,7 +43,6 @@ async function main() {
         "nginx.ingress.kubernetes.io/rewrite-target": "/",
         "nginx.ingress.kubernetes.io/ssl-redirect": "true",
         "nginx.ingress.kubernetes.io/backend-protocol": "HTTP",
-        "nginx.ingress.kubernetes.io/configuration-snippet": `proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection "upgrade"`
       },
       enabled: true,
       className: "nginx",
@@ -60,7 +59,7 @@ async function main() {
       }]
     },
     service: {
-      //type: "LoadBalancer",
+      type: "LoadBalancer",
       port: 8123
     },
     persistence: {

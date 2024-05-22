@@ -21,7 +21,7 @@ async function main() {
     kubeconfig: output(infraConfigObj.kubeConfigPath).apply(path => path)
   });
   // Set the path for the local chart
-  const chartPath = "./../../helm-charts/charts/nginx-ingress";
+  const chartPath = "./../../helm-charts/charts/ingress-nginx";
   // Define custom values
   const customChartValues = {
     controller: {
