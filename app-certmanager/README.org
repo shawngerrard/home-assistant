@@ -52,7 +52,7 @@ openssl req -new -key key.pem -out csr.pem
  - Create a self-signed certificate with a Common Name (CN)
 
 #+begin_src bash
-openssl req -x509 -sha256 -days 365 -key key.pem -in csr.pem -out cert.pem -subj "/CN=dev.homeassistant.local"
+openssl req -x509 -sha256 -days 365 -key key.pem -in csr.pem -out cert.pem -subj "/CN=<host name>"
 #+end_src
 
 ** Deployment
