@@ -75,6 +75,8 @@ openssl req -new -key key.pem -out csr.pem -config req.conf
 openssl x509 -req -in csr.pem -signkey key.pem -out cert.pem -days 365 -sha256 -extfile req.conf -extensions req_ext
 #+end_src
 
+To test, we can import the cert into the ~certificates~ snap-in in the ~mmc~ console.
+
 ** Deployment
 
 With the applications to deploy defined within the project (typically ~index.ts~), we can deploy our ~app-certmanager~ suite.
