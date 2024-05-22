@@ -33,6 +33,28 @@ Finally, for the projects to compile we must download the code package dependenc
 cd ~/documents/home-assistant/app-certmanager && npm install
 #+end_src
 
+** Generating a self-signed certificate
+
+For local network testing purposes, we can generate a self-signed certificate with the following commands:
+
+ - Create a private key
+
+#+begin_src bash
+openssl genrsa -out key.pem 2048
+#+end_src
+
+ - Create a Certificate Signing Request (CSR)
+
+#+begin_src bash
+openssl req -new -key key.pem -out csr.pem
+#+end_src
+
+ - Create a self-signed certificate with a Common Name (CN)
+
+#+begin_src bash
+openssl req -x509 -sha256 -days 365 -key key.pem -in csr.pem -out cert.pem -subj "/CN=dev.homeassistant.local"
+#+end_src
+
 ** Deployment
 
 With the applications to deploy defined within the project (typically ~index.ts~), we can deploy our ~app-certmanager~ suite.

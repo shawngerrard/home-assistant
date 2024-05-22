@@ -35,9 +35,15 @@ async function main() {
   const customChartValues = {
     ingress: {
       annotations: {
-        "nginx.ingress.kubernetes.io/limit-rps": "5", // limit request per seconds multiplied by default burst-multiplier (5)
-        "nginx.ingress.kubernetes.io/limit-connections": "2", // limit per ip
+        "nginx.ingress.kubernetes.io/limit-rps": "10", // limit request per seconds multiplied by default burst-multiplier (5)
+        "nginx.ingress.kubernetes.io/limit-connections": "10", // limit per ip
         "nginx.ingress.kubernetes.io/proxy-body-size": "30M", // limit request proxy body site to 30 megabytes
+        "nginx.ingress.kubernetes.io/proxy-http-version": "1.1",
+        "nginx.ingress.kubernetes.io/proxy-read-timeout": "86400",
+        "nginx.ingress.kubernetes.io/rewrite-target": "/",
+        "nginx.ingress.kubernetes.io/ssl-redirect": "true",
+        "nginx.ingress.kubernetes.io/backend-protocol": "HTTP",
+        "nginx.ingress.kubernetes.io/configuration-snippet": `proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection "upgrade"`
       },
       enabled: true,
       className: "nginx",
@@ -54,6 +60,7 @@ async function main() {
       }]
     },
     service: {
+      //type: "LoadBalancer",
       port: 8123
     },
     persistence: {

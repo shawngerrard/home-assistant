@@ -14,7 +14,7 @@ import { getInfraStackConfigFromStackOutput } from "../bin/functions/infraConfig
 import { getCertManagerStackConfig } from "../bin/functions/certManagerConfig";
 import { CertManager } from "@pulumi/kubernetes-cert-manager";
 import * as k8s from "@pulumi/kubernetes";
-import * as pulumi from "@pulumi/pulumi";
+
 async function main() {
   // Obtain the stack configuration
   const stackConfig = new Config(getProject());
