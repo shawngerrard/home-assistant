@@ -5,6 +5,7 @@
 */
 import * as k8s from "@pulumi/kubernetes";
 import { all, concat, Config, getProject, getStack, output } from "@pulumi/pulumi";
+import { remote } from "@pulumi/command";
 import { getInfraStackConfigFromStackOutput } from "../bin/functions/infraConfig";
 
 async function main() {
@@ -42,7 +43,7 @@ async function main() {
         "nginx.ingress.kubernetes.io/proxy-read-timeout": "86400",
         "nginx.ingress.kubernetes.io/rewrite-target": "/",
         "nginx.ingress.kubernetes.io/ssl-redirect": "true",
-        "nginx.ingress.kubernetes.io/backend-protocol": "HTTP",
+        "nginx.ingress.kubernetes.io/backend-protocol": "HTTP"
       },
       enabled: true,
       className: "nginx",
@@ -59,7 +60,7 @@ async function main() {
       }]
     },
     service: {
-      type: "LoadBalancer",
+      //type: "LoadBalancer",
       port: 8123
     },
     persistence: {
@@ -81,6 +82,22 @@ async function main() {
     namespace: infraConfigObj.homeAssistantNamespace,
     values: customChartValues
   });
+  /*
+  // Update home assistant configuration to trust nginx
+  const updateConfig = new remote.Command("Update home assistant configuration", {
+    create: "cd /mnt/data/home-assistant/ && sudo sed -zi '/http:/!s/$/\nhttp:\n\ \ use_x_forwarded_for\:\ true\n\ \ trusted_proxies\:\n\ \ \ \ - 10.42.0.0\/16/' configuration.yaml",
+    connection: {
+      host: infraConfigObj.serverIp,
+      user: infraConfigObj.serverUser,
+      port: infraConfigObj.serverPort,
+      privateKey: config.require("serverKey")
+    },
+    delete: ""
+  }, {
+    dependsOn: appChart
+  })
+  // Update the home assistant deployment to initialize the new configuration
+*/
   // Return the connection object for output (testing)
   //return customChartValues;
   // Return the ingress service endpoint ip for output (testing)

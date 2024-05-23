@@ -16,7 +16,7 @@ export async function getServerConnectionConfig(config: pulumi.Config): Promise<
   return configObj;
 }
 
-// Supporting function for abstraction of getting server stack references
+// (Deprecated) Supporting function for abstraction of getting server stack references
 export async function getConnectionConfigFromStackOutput(config: pulumi.Config): Promise<iConnectionObj> {
   // Obtain references to the server stack
   const stackRef = new pulumi.StackReference(`${config.require("org")}/${config.require("serverProject")}/${pulumi.getStack()}`);

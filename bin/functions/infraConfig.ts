@@ -1,18 +1,16 @@
-import { Config, getStack, StackReference } from "@pulumi/pulumi";
+import { Config, getStack, output, StackReference } from "@pulumi/pulumi";
 import { iInfraStackConfig } from "../interfaces/config"
 
 // Function to obtain stack configuration
 export async function getInfraStackConfig(stackConfig: Config) {
-  // Obtain the current project name
-  //const projectName:string = pulumi.getProject();
-  // Obtain the stack configuration
-  //const config = new pulumi.Config(projectName);
   // Create infra stack config object using either config or stack references
   const stackConfigObj: iInfraStackConfig = {
     homeAssistantNamespace: stackConfig.require("homeAssistantNamespace"),
     adminEmail: stackConfig.require("adminEmail"),
     kubeConfigPath: stackConfig.require("kubeConfigPath"),
     serverIp: stackConfig.require("serverIp"),
+    serverUser: stackConfig.require("serverUser"),
+    serverPort: output(22).apply(val => val),
     storageClassName: stackConfig.require("serverVolumeStorageClass"),
     persistentVolumeMountPath: stackConfig.require("serverVolumeMountPath")
   };
@@ -39,6 +37,12 @@ export async function getInfraStackConfigFromStackOutput(stackConfig: Config): P
     }),
     serverIp: infraConfig.apply(ref => {
       return ref.serverIp
+    }),
+    serverUser: infraConfig.apply(ref => {
+      return ref.serverUser
+    }),
+    serverPort:infraConfig.apply(ref => {
+      return ref.serverPort
     }),
     storageClassName: infraConfig.apply(ref => {
       return ref.serverVolumeStorageClass

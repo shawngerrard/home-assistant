@@ -22,6 +22,7 @@ The code attempts to obtain stack references from the ~myhome/infra-k3s/dev~ sta
 cd ~/documents/home-assistant/app-homeassistant
 pulumi config set org $(pulumi org get-default)
 pulumi config set serverProject infra-k3s
+cat ~/path/to/ssh/private/key | pulumi config set --secret serverKey
 #+end_src
 
 For the project to compile we must download the code package dependencies from ~npm~ referenced in the project's ~package.json~:

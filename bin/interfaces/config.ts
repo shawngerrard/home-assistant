@@ -7,6 +7,8 @@ export interface iInfraStackConfig {
   kubeConfigPath: string | pulumi.Output<any>,
   persistentVolumeMountPath: string | pulumi.Output<any>,
   serverIp: string | pulumi.Output<any>,
+  serverUser: string | pulumi.Output<any>,
+  serverPort: number | pulumi.Output<any>,
   storageClassName: string | pulumi.Output<any>
 }
 
