@@ -2,9 +2,9 @@ import * as pulumi from "@pulumi/pulumi";
 import { iConnectionObj } from "../interfaces/connection";
 
 // Function to abstract obtaining server connection configuration from stack config
-export async function getServerConnectionConfig(config: pulumi.Config): Promise<iConnectionObj> {
+export async function getServerConnectionConfig(): Promise<iConnectionObj> {
   // Obtain the stack configuration
-  //const config = new pulumi.Config(pulumi.getProject());
+  const config = new pulumi.Config(pulumi.getProject());
   // Create connection object using either config or stack references
   const configObj = {
     host: config.require("serverIp"),

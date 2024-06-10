@@ -14,9 +14,9 @@ async function main() {
   // Create a config object
   const config = new pulumi.Config(pulumi.getProject());
   // Create connection object
-  const connectionObj: iConnectionObj = await getServerConnectionConfig(config);
+  const connectionObj: iConnectionObj = await getServerConnectionConfig();
   // Install k3s on server
-  const installKube = await installK3s(connectionObj);
+  const installKube = await installK3s(connectionObj, config.require("serverExtIp"));
   // Configure cluster access on server
   const kubeConfig = await copyKubeConfig(connectionObj, installKube);
   // Create kubeconfig environment variable
@@ -36,9 +36,10 @@ async function main() {
   // Return connection configuration
   return {
     serverIp: connectionObj.host,
+    serverExtIp: config.require("serverExtIp"),
     serverPort: connectionObj.port,
     serverUser: connectionObj.user,
-    adminEmail: new pulumi.Config("adminEmail"),
+    adminEmail: config.require("adminEmail"),
     serverVolumeStorageClass: persistentVolume.spec.storageClassName,
     serverVolumeMountPath: persistentVolume.spec.hostPath.path,
     homeAssistantNamespace: homeAssistantNamespace.metadata.name,

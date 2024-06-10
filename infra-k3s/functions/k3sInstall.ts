@@ -4,10 +4,10 @@ import { remote, local } from "@pulumi/command";
 import { iConnectionObj } from "../../bin/interfaces/connection";
 
 // Async function to install k3s
-export async function installK3s (connectionObj: iConnectionObj): Promise<remote.Command> {
+export async function installK3s (connectionObj: iConnectionObj, serverExtIp: string): Promise<remote.Command> {
   // Remote command to install k3s on the server
   const installKube = new remote.Command("Install K3S", {
-    create: "curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644 --disable=traefik --data-dir /mnt/data/k3s/",
+    create: `curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644 --disable=traefik --data-dir /mnt/data/k3s/ --tls-san ${serverExtIp}`,
     connection: connectionObj,
     delete: "/usr/local/bin/k3s-uninstall.sh"
   }, {});
