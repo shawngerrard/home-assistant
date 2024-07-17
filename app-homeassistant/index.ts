@@ -5,7 +5,6 @@
 */
 import * as k8s from "@pulumi/kubernetes";
 import { all, concat, Config, getProject, getStack, output } from "@pulumi/pulumi";
-import { remote } from "@pulumi/command";
 import { getInfraStackConfigFromStackOutput } from "../bin/functions/infraConfig";
 
 async function main() {
@@ -43,20 +42,85 @@ async function main() {
         "nginx.ingress.kubernetes.io/proxy-read-timeout": "86400",
         "nginx.ingress.kubernetes.io/rewrite-target": "/",
         "nginx.ingress.kubernetes.io/ssl-redirect": "true",
-        "nginx.ingress.kubernetes.io/backend-protocol": "HTTP"
+        "nginx.ingress.kubernetes.io/backend-protocol": "HTTP",
+        "cert-manager.io/cluster-issuer": "letsencrypt-prod"
       },
       enabled: true,
       className: "nginx",
       hosts: [{
-        host: "dev.homeassistant.local",
+        host: "liveyourpassion.nz",
+        paths: [{
+          path: "/",
+          pathType: "Prefix",
+          backend: {
+            service: {
+              name: "home-assistant",
+              port: {
+                number: 8123
+              }
+            }
+          }
+        },
+        {
+          path: "/.well-known/acme-challenge",
+          pathType: "Prefix",
+          backend: {
+            service: {
+              name: "cert-manager",
+              port: {
+                number: 8089
+              }
+            }
+          }
+        }],
+      },
+      {
+        host: "liveyourpassion.co.nz",
+        paths: [{
+          path: "/",
+          pathType: "Prefix",
+          backend: {
+            service: {
+              name: "home-assistant",
+              port: {
+                number: 8123
+              }
+            }
+          }
+        },
+                {
+          path: "/.well-known/acme-challenge",
+          pathType: "Prefix",
+          backend: {
+            service: {
+              name: "cert-manager",
+              port: {
+                number: 8089
+              }
+            }
+          }
+        }],
+      }
+              /*
+      ,{
+        host: "dev.liveyourpassion.nz",
         paths: [{
           path: "/",
           pathType: "Prefix"
         }],
-      }],
+      },
+      {
+        host: "dev.liveyourpassion.co.nz",
+        paths: [{
+          path: "/",
+          pathType: "Prefix"
+        }],
+      }
+      */
+      ],
       tls: [{
-        secretName: "tls-secret",
-        hosts: ["homeassistant.local","dev.homeassistant.local"]
+        secretName: "homeassistant-dev-tls",
+        hosts: ["liveyourpassion.nz","liveyourpassion.co.nz"]
       }]
     },
     service: {

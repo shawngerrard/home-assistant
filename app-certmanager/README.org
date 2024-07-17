@@ -21,7 +21,7 @@ The code attempts to obtain stack references from the ~myhome/infra-k3s/dev~ sta
 
 #+begin_src bash
 cd ~/documents/home-assistant/app-certmanager
-pulumi config set certSecretName pulumi config set certSecretName homeassistant-$(pulumi stack --show-name)-tls
+pulumi config set certSecretName homeassistant-$(pulumi stack --show-name)-tls
 pulumi config set org $(pulumi org get-default)
 pulumi config set serverProject infra-k3s
 pulumi config set version v1.14.5

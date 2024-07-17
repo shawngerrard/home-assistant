@@ -13,7 +13,6 @@ import { Provider } from "@pulumi/kubernetes";
 import { getInfraStackConfigFromStackOutput } from "../bin/functions/infraConfig"
 import { getCertManagerStackConfig } from "../bin/functions/certManagerConfig";
 import { CertManager } from "@pulumi/kubernetes-cert-manager";
-import * as k8s from "@pulumi/kubernetes";
 
 async function main() {
   // Obtain the stack configuration
@@ -23,7 +22,7 @@ async function main() {
   // Obtain the cert-manager config
   const certManagerConfigObj = await getCertManagerStackConfig(stackConfig);
   // Create a provider to interact with the kubernetes api server
-  const provider = new Provider("k8s-provder", {
+  const provider = new Provider("k8s-provider", {
     kubeconfig: output(infraStackRefObj.kubeConfigPath).apply(path => { return fs.readFileSync(path, "utf-8")}),
     namespace: infraStackRefObj.homeAssistantNamespace
   });
@@ -48,6 +47,7 @@ async function main() {
   /* --------------------------------------------------------- */
   /* -------- Temp code using self-signed certificate -------- */
   /* --------------------------------------------------------- */
+  /*
   // Read the contents of the certificate and private key files
   const certificateContent = fs.readFileSync("cert.pem", "utf8");
   const privateKeyContent = fs.readFileSync("key.pem", "utf8");
@@ -96,8 +96,8 @@ async function main() {
       },
     },
   });
+  */
   /* --------------------------------------------------------- */
-  /*
   // Define a cluster cert authority issuer
   const clusterIssuer = new CustomResource("letsencrypt-clusterissuer", {
     apiVersion: "cert-manager.io/v1",
@@ -135,6 +135,7 @@ async function main() {
     kind: "Certificate",
     metadata: {
       name: "homeassistant-certificate",
+      namespace: `home-assistant-${getStack()}`,
       labels: {
         app: "home-assistant",
         environment: getStack()
@@ -146,17 +147,18 @@ async function main() {
         name: "letsencrypt-prod",
         kind: "ClusterIssuer",
       },
-      commonName: "homeassistant.local",
+      commonName: "liveyourpassion.nz",
       dnsNames: [
-        "homeassistant.local",
-        `${getStack()}.homeassistant.local`,
+        "liveyourpassion.nz",
+        "liveyourpassion.co.nz"
+        //`${getStack()}.liveyourpassion.nz`,
+        //`${getStack()}.liveyourpassion.co.nz`
       ],
     },
   }, {
     provider: provider,
     dependsOn: clusterIssuer
   });
-  */
 
   // Return any stack output
   return {
