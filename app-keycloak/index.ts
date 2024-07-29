@@ -47,7 +47,7 @@ async function main() {
   };
   // Deploy the nginx-ingress-controller local chart
   // TODO: Update helm charts repo as environment-specific multi-repo
-  const appChart = new Chart("nginx",{
+  const appChart = new Chart("keycloak",{
     path: chartPath,
     // TODO: Update infra and deployment repo into environment-specific multi-repo
     namespace: infraConfigObj.homeAssistantNamespace,
@@ -57,4 +57,4 @@ async function main() {
   return "";
 }
 // Export the custom values supplied to the helm chart
-export const nginxStackOutput = main();
+export const keycloackStackOutput = main();
