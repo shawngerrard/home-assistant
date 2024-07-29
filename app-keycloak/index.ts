@@ -9,7 +9,7 @@
 import { Chart } from "@pulumi/kubernetes/helm/v3";
 import { getInfraStackConfigFromStackOutput } from "../bin/functions/infraConfig";
 import { getCertManagerStackConfigFromStackOutput } from "../bin/functions/certManagerConfig"
-import { Config, getProject, getStack } from "@pulumi/pulumi";
+import { Config, interpolate, getProject, getStack } from "@pulumi/pulumi";
 
 async function main() {
   // Obtain the stack config
@@ -24,8 +24,9 @@ async function main() {
   const customChartValues = {
     controller: {
       defaultTLS: {
-        //secret: pulumi.interpolate `${infraConfigObj.homeAssistantNamespace}/${certManagerConfigObj.certSecretName}`
-        secret: "home-assistant-dev/tls-secret"
+        secret: interpolate `home-assistant-dev/${certManagerConfigObj.certSecretName}`
+        //secret: interpolate `${infraConfigObj.homeAssistantNamespace}/${certManagerConfigObj.certSecretName}`
+        //secret: "home-assistant-dev/tls-secret"
       },
       enableCertManager: true,
       pod: {
@@ -57,4 +58,4 @@ async function main() {
   return "";
 }
 // Export the custom values supplied to the helm chart
-export const keycloackStackOutput = main();
+export const keycloakStackOutput = main();
