@@ -88,7 +88,7 @@ async function main() {
             }
           }
         },
-                {
+        {
           path: "/.well-known/acme-challenge",
           pathType: "Prefix",
           backend: {

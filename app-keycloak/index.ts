@@ -21,29 +21,29 @@ async function main() {
   // Set the path for the local chart
   const chartPath = "./../../helm-charts/charts/keycloak";
   // Define custom values
+    //
+    //
+    //
   const customChartValues = {
-    controller: {
-      defaultTLS: {
-        secret: interpolate `home-assistant-dev/${certManagerConfigObj.certSecretName}`
-        //secret: interpolate `${infraConfigObj.homeAssistantNamespace}/${certManagerConfigObj.certSecretName}`
-        //secret: "home-assistant-dev/tls-secret"
+    ingress: {
+      annotations: {
+        "cert-manager.io/cluster-issuer": "letsencrypt-prod"
       },
-      enableCertManager: true,
-      pod: {
-        extraLabels: {
-          app: "home-assistant",
-          environment: getStack()
-        }
+      enabled: true,
+      ingressClassName: "nginx",
+      tls: true,
+      hostname: "keycloak.liveyourpassion.nz",
+      path: "/"
+    },
+    adminIngress: {
+      annotations: {
+        "cert-manager.io/cluster-issuer": "letsencrypt-prod"
       },
-      service: {
-        extraLabels: {
-          app: "home-assistant",
-          environment: getStack()
-        },
-        httpPort: {
-          enable: false
-        }
-      }
+      enabled: true,
+      ingressClassName: "nginx",
+      tls: true,
+      hostname: "keycloak-admin.liveyourpassion.nz",
+      path: "/"
     }
   };
   // Deploy the nginx-ingress-controller local chart
