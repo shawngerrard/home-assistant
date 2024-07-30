@@ -33,7 +33,15 @@ async function main() {
       ingressClassName: "nginx",
       tls: true,
       hostname: "keycloak.liveyourpassion.nz",
-      path: "/"
+      path: "/",
+      extraPaths: [
+        {
+          path: "/.well-known/acme-challenge",
+          backend: {
+            serviceName: "keycloak",
+            servicePort: 80
+          }
+      }]
     },
     adminIngress: {
       annotations: {
@@ -43,7 +51,26 @@ async function main() {
       ingressClassName: "nginx",
       tls: true,
       hostname: "keycloak-admin.liveyourpassion.nz",
-      path: "/"
+      path: "/",
+      extraPaths: [
+        {
+          path: "/.well-known/acme-challenge",
+          backend: {
+            serviceName: "keycloak",
+            servicePort: 80
+          }
+      }]
+    },
+    keycloakConfigCli: {
+      enabled: true,
+      configuration: {
+        "master.json": JSON.stringify({
+            realm : "master",
+            attributes: {
+              frontendUrl: "https://keycloak-admin.liveyourpassion.nz"
+            }
+        })
+      }
     }
   };
   // Deploy the nginx-ingress-controller local chart
