@@ -27,6 +27,7 @@ async function main() {
   const customChartValues = {
     ingress: {
       annotations: {
+        "kubernetes.io/ingress.class": "nginx",
         "cert-manager.io/cluster-issuer": "letsencrypt-prod"
       },
       enabled: true,
@@ -45,6 +46,7 @@ async function main() {
     },
     adminIngress: {
       annotations: {
+        "kubernetes.io/ingress.class": "nginx",
         "cert-manager.io/cluster-issuer": "letsencrypt-prod"
       },
       enabled: true,
