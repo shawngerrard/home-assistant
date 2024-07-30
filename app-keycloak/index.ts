@@ -38,9 +38,14 @@ async function main() {
       extraPaths: [
         {
           path: "/.well-known/acme-challenge",
+          pathType: "ImplementationSpecific",
           backend: {
-            serviceName: "keycloak",
-            servicePort: 80
+            service: {
+              name: "keycloak",
+              port: {
+                number: 80
+              }
+            }
           }
       }]
     },
@@ -57,9 +62,14 @@ async function main() {
       extraPaths: [
         {
           path: "/.well-known/acme-challenge",
+          pathType: "ImplementationSpecific",
           backend: {
-            serviceName: "keycloak",
-            servicePort: 80
+            service: {
+              name: "keycloak",
+              port: {
+                number: 80
+              }
+            }
           }
       }]
     },
