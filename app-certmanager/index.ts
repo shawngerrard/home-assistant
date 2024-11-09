@@ -147,10 +147,9 @@ async function main() {
         name: "letsencrypt-prod",
         kind: "ClusterIssuer",
       },
-      commonName: "liveyourpassion.nz",
+      commonName: "servusmachina.com",
       dnsNames: [
-        "liveyourpassion.nz",
-        "liveyourpassion.co.nz"
+        "servusmachina.com"
         //`${getStack()}.liveyourpassion.nz`,
         //`${getStack()}.liveyourpassion.co.nz`
       ],
