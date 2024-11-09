@@ -33,7 +33,7 @@ async function main() {
       enabled: true,
       ingressClassName: "nginx",
       tls: true,
-      hostname: "keycloak.liveyourpassion.nz",
+      hostname: "keycloak.servusmachina.com",
       path: "/",
       extraPaths: [
         {
@@ -57,7 +57,7 @@ async function main() {
       enabled: true,
       ingressClassName: "nginx",
       tls: true,
-      hostname: "keycloak-admin.liveyourpassion.nz",
+      hostname: "keycloak-admin.servusmachina.com",
       path: "/",
       extraPaths: [
         {
@@ -79,7 +79,7 @@ async function main() {
         "master.json": JSON.stringify({
             realm : "master",
             attributes: {
-              frontendUrl: "https://keycloak-admin.liveyourpassion.nz"
+              frontendUrl: "https://keycloak-admin.servusmachina.com"
             }
         })
       }
