@@ -48,7 +48,7 @@ async function main() {
       enabled: true,
       className: "nginx",
       hosts: [{
-        host: "liveyourpassion.nz",
+        host: "servusmachina.com",
         paths: [{
           path: "/",
           pathType: "Prefix",
@@ -73,54 +73,10 @@ async function main() {
             }
           }
         }],
-      },
-      {
-        host: "liveyourpassion.co.nz",
-        paths: [{
-          path: "/",
-          pathType: "Prefix",
-          backend: {
-            service: {
-              name: "home-assistant",
-              port: {
-                number: 8123
-              }
-            }
-          }
-        },
-        {
-          path: "/.well-known/acme-challenge",
-          pathType: "Prefix",
-          backend: {
-            service: {
-              name: "cert-manager",
-              port: {
-                number: 8089
-              }
-            }
-          }
-        }],
-      }
-              /*
-      ,{
-        host: "dev.liveyourpassion.nz",
-        paths: [{
-          path: "/",
-          pathType: "Prefix"
-        }],
-      },
-      {
-        host: "dev.liveyourpassion.co.nz",
-        paths: [{
-          path: "/",
-          pathType: "Prefix"
-        }],
-      }
-      */
-      ],
+      }],
       tls: [{
         secretName: "homeassistant-dev-tls",
-        hosts: ["liveyourpassion.nz","liveyourpassion.co.nz"]
+        hosts: ["servusmachina.com"]
       }]
     },
     service: {
